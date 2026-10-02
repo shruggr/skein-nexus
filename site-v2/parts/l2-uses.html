@@ -230,7 +230,7 @@
   <div class="deeper">
     <span class="label">Go deeper</span>
     <div class="cards">
-      <a href="#running"><em>Running one</em><b>Hosting</b><span>What it takes to keep a skein running.</span></a>
+      <a href="#running"><em>Running one</em><b>Where a skein runs</b><span>A server, the command line, a browser tab, an application.</span></a>
       <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>System trees, apps, packets, checkpoints.</span></a>
     </div>
   </div>
@@ -239,23 +239,31 @@
 <!-- ============================================================ RUNNING -->
 <article data-page="running">
   <span class="pagekicker">Running one</span>
-  <h1 class="page-h">Hosting</h1>
-  <p class="lede">A skein needs a host to run it and keep it reachable.</p>
+  <h1 class="page-h">Where a skein runs</h1>
+  <p class="lede">A skein runs on a host. The host can be a server running many skeins, your own machine, a browser tab, or an application with the kernel built in. The skein and its history are the same on each.</p>
 
   <div class="prose block">
-    <h2>What a host does</h2>
-    <p>A host can be a hosting service running many skeins, your own machine, or a browser tab running one. Whatever it is, it does the same few jobs. It runs the kernel and keeps the store. It holds the keys and answers the skein’s signing requests, outside the sandbox. It carries what arrives (web requests, mail, peer-to-peer messages) into the right skein’s history. And it provides, or points to, the services the skein uses: a web proxy, a broadcaster, timers, a libp2p node.</p>
-    <p>A service may be the host’s or anyone’s; to the skein it is only an address in its book. The host decides nothing and routes nothing inside the skein: the skein’s own dispatch table does that. So a skein can move between hosts.</p>
+    <h2>What every host does</h2>
+    <p>It runs the kernel. It holds the keys and signs what the skein asks it to sign, outside the sandbox. It keeps the store. And it provides, or points to, the transports and services the skein’s tables name: HTTP, a mailbox, libp2p, a web proxy, a broadcaster, timers. A service may be the host’s or anyone’s; to the skein it is only an address in its book. The host decides nothing and routes nothing inside the skein: the skein’s own dispatch table does that. So a skein can move between hosts.</p>
 
-    <h2>Getting one, and paying for it</h2>
-    <p>How you get a skein from someone else’s host is not decided. How a skein pays its host is not decided either.</p>
+    <h2>A multi-skein host</h2>
+    <p>One process, one master secret, many skeins. Each skein’s identity key and its libp2p key are derived from that secret inside the process, so no secret is passed between tools. Each skein has its own address, its own store and its own libp2p node. This is what a service operator runs.</p>
+
+    <h2>The command line</h2>
+    <p>One skein on your own machine, run by the same host code. It is for development and for personal use.</p>
+
+    <h2>The browser</h2>
+    <p>The kernel runs in a tab, in a Worker, with IndexedDB as the store and your wallet as the signer. Mail that arrives while the tab is closed waits in the skein’s mailbox, and timers fire when the tab is next open. Peer-to-peer runs over js-libp2p, with bootstrap nodes we provide.</p>
+
+    <h2>Embedded in an application</h2>
+    <p>The kernel linked into a standalone application, which supplies its own signer and transports.</p>
   </div>
 
   <div class="deeper">
     <span class="label">Go deeper</span>
     <div class="cards">
       <a href="#t-arch"><em>Technical</em><b>Architecture</b><span>The kernel, apps, and the host.</span></a>
-      <a href="#t-status"><em>Technical</em><b>What is built</b><span>Built, in progress, not yet.</span></a>
+      <a href="#t-vm"><em>Technical</em><b>The kernel and VM</b><span>The browser build, fuel and replay.</span></a>
     </div>
   </div>
 </article>

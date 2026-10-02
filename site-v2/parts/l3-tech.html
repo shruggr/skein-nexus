@@ -236,7 +236,7 @@
     </ul>
 
     <h2>Browser build</h2>
-    <p>The same kernel for <code>wasm32-freestanding</code> (2.4 MB) in a Worker, with IndexedDB as the store. It needs cross-origin isolation. It runs preview1 modules only, and has no libp2p. Logs cross between browser and native in both directions.</p>
+    <p>The same kernel for <code>wasm32-freestanding</code> (2.4 MB) in a Worker, with IndexedDB as the store. It needs cross-origin isolation. It runs preview1 modules only. Peer-to-peer runs over js-libp2p, with bootstrap nodes we provide. Logs cross between browser and native in both directions.</p>
   </div>
 
   <div class="deeper">
@@ -374,7 +374,7 @@ SOUL.md, IDENTITY.md, skills/…    the instance's own files</pre>
     <span class="label">Next</span>
     <div class="cards">
       <a href="#t-status"><em>Technical</em><b>What is built</b><span>Status by area.</span></a>
-      <a href="#running"><em>Running one</em><b>Hosting</b><span>Back to the overview level.</span></a>
+      <a href="#running"><em>Running one</em><b>Where a skein runs</b><span>Back to the overview level.</span></a>
     </div>
   </div>
 </article>
@@ -387,7 +387,7 @@ SOUL.md, IDENTITY.md, skills/…    the instance's own files</pre>
 
   <div class="block" style="max-width:var(--measure)">
     <div class="levels">
-      <div><h4>Kernel</h4><p><span class="status built">built</span> Zig kernel on wasmtime, both ABIs, fuel, fuel clock, deterministic random, replay, MST index, single state record, browser build, the four tables (objects, heads with owners, the dispatch table, the address book), admin operations in the kernel, write scope by app name. <span class="status">not yet</span> Pruning; libp2p and components in the browser build.</p></div>
+      <div><h4>Kernel</h4><p><span class="status built">built</span> Zig kernel on wasmtime, both ABIs, fuel, fuel clock, deterministic random, replay, MST index, single state record, browser build, the four tables (objects, heads with owners, the dispatch table, the address book), admin operations in the kernel, write scope by app name. <span class="status">not yet</span> Pruning; components in the browser build; js-libp2p in the browser, with our bootstrap nodes.</p></div>
       <div><h4>Userland</h4><p><span class="status built">built</span> Shell and tools, git, JavaScript, Python. <span class="status">not yet</span> tar/gzip, packages, streaming pipes.</p></div>
       <div><h4>Network</h4><p><span class="status built">built</span> Front door stepped on every request, sessions as records, the dispatch table, mailbox instances, messagebox, address book, discovery, <code>emit</code> and providers (web proxy, waker, cron, libp2p, status), delivery threads, libp2p on every transport, overlay gossip. <span class="status">not yet</span> Any authenticated HTTP endpoint as a recipient (#82); status reports signed by Arcade itself (the host relays them today).</p></div>
       <div><h4>Wallet and chain</h4><p><span class="status built">built</span> Signer interface, wallet program, SPV, sparse proofs, settlement, broadcast as an event, the chain app (ingest a BEEF, broadcast, an answer on each change). <span class="status wip">in progress</span> The wallet under its own name, reading the chain app (#79). <span class="status">not yet</span> Header catch-up, proofs on demand, certificates, payments carried on messages.</p></div>
@@ -395,7 +395,6 @@ SOUL.md, IDENTITY.md, skills/…    the instance's own files</pre>
       <div><h4>Apps</h4><p><span class="status built">built</span> Manifest, install and uninstall with approval, the app record under <code>&lt;app&gt;/app</code>, start/stop, the SDK’s <code>app.serve</code>; apps in their own repositories (static, overlay, chain). <span class="status wip">in progress</span> Manifests in the dispatch-row shape (#79). <span class="status">not yet</span> The shell and the chat app as two apps (#83); a genesis that states the capabilities it needs (#81); a bare genesis with every app installed on top.</p></div>
       <div><h4>Inference</h4><p><span class="status built">built</span> Inference peer, context deltas, turn records, tool steps. <span class="status">not yet</span> Forking UI, the graph as a tool for the model, budgets.</p></div>
       <div><h4>Deployment</h4><p><span class="status built">built</span> System trees, reading chain packets, checkpoints, app upgrade by reinstall. <span class="status">not yet</span> Publishing apps and snapshots on chain, booting or installing from an outpoint or a commit ID.</p></div>
-      <div><h4>Hosting</h4><p><span class="status built">built</span> Metering. <span class="status">not decided</span> Billing, getting a skein from a host. <span class="status">not yet</span> Public hosting.</p></div>
       <div><h4>Graph ops</h4><p><span class="status built">built</span> Heads, git branches and merges, conversation parents, checkpoint restore. <span class="status">not yet</span> Forking or merging whole instances.</p></div>
     </div>
     <p class="quiet" style="font-size:15.5px;margin-top:14px">Latest suites (main 2e55aa2): kernel 35/35, npm 155/155, equivalence all ok (18/18 histories identical, browser replays included). The tracker is <a href="https://github.com/shruggr/skein/issues/31">issue #31</a>.</p>
