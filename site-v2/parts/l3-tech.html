@@ -3,76 +3,85 @@
 <article data-page="t-arch">
   <span class="pagekicker">Technical</span>
   <h1 class="page-h">Architecture</h1>
-  <p class="lede">A deterministic WASI machine over a content-addressed graph. It has three layers: one kernel, a catalogue of programs, and several runtimes that drive the kernel from outside.</p>
+  <p class="lede">A deterministic WASI machine over a content-addressed graph. It has three layers: one kernel (the machine, its four tables and the signer), the apps that run on it, and the hosts that drive it from outside.</p>
 
   <div class="block">
-    <div class="fig-inline" style="max-width:860px" role="img" aria-label="Diagram: a runtime (the host) provides routing, a signer, feeds, a libp2p host, a waker, a fuel ledger and an HTTP proxy. It drives one kernel per instance. Each kernel runs programs: front door, messagebox, wallet, loop and others, over a store of records.">
-      <svg viewBox="0 0 860 400" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12">
+    <div class="fig-inline" style="max-width:860px" role="img" aria-label="Diagram: a host provides transports, a signer, a web proxy, a waker and cron, a broadcaster, feeds, a store and a fuel ledger. It drives one kernel per instance. Each kernel holds four tables (objects, heads, the dispatch table, the address book) and runs apps, each under its own name: front door, messagebox, resolve, wallet, chain, the shell, chat, overlays and static sites, over a store of records.">
+      <svg viewBox="0 0 860 450" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12">
         <defs><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>
         <!-- outside -->
-        <text x="16" y="40" fill="var(--ink-2)">clients · peers · agents</text>
-        <text x="16" y="58" fill="var(--ink-2)">Bitcoin feeds · web · libp2p</text>
+        <text x="16" y="40" fill="var(--ink-2)">clients · peers · other skeins</text>
+        <text x="16" y="58" fill="var(--ink-2)">Bitcoin · web · libp2p · services</text>
         <path d="M110,70 V96" stroke="var(--ink-3)" stroke-width="1.3" marker-end="url(#aa)" marker-start="url(#aa)"/>
-        <!-- runtime -->
+        <!-- host -->
         <rect x="16" y="100" width="828" height="92" rx="12" fill="var(--sunk)" stroke="var(--rule)"/>
-        <text x="32" y="124" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="15" font-weight="600">runtime (host): a server · a desktop · a browser tab</text>
+        <text x="32" y="124" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="15" font-weight="600">host: a server · a desktop · a browser tab</text>
         <g font-size="11.5">
-          <rect x="32" y="140" width="120" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="44" y="162" fill="var(--ink)">routing</text>
-          <rect x="164" y="140" width="92" height="36" rx="6" fill="var(--surface)" stroke="var(--keys)"/><text x="178" y="162" fill="var(--keys)">signer</text>
-          <rect x="268" y="140" width="84" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="284" y="162" fill="var(--ink)">feeds</text>
-          <rect x="364" y="140" width="108" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="376" y="162" fill="var(--ink)">libp2p host</text>
-          <rect x="484" y="140" width="80" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="498" y="162" fill="var(--ink)">waker</text>
-          <rect x="576" y="140" width="112" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="588" y="162" fill="var(--ink)">fuel ledger</text>
-          <rect x="700" y="140" width="128" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="712" y="162" fill="var(--ink)">http proxy</text>
+          <rect x="32" y="140" width="96" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="44" y="162" fill="var(--ink)">transports</text>
+          <rect x="136" y="140" width="66" height="36" rx="6" fill="var(--surface)" stroke="var(--keys)"/><text x="148" y="162" fill="var(--keys)">signer</text>
+          <rect x="210" y="140" width="88" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="222" y="162" fill="var(--ink)">web proxy</text>
+          <rect x="306" y="140" width="110" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="318" y="162" fill="var(--ink)">waker · cron</text>
+          <rect x="424" y="140" width="102" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="436" y="162" fill="var(--ink)">broadcaster</text>
+          <rect x="534" y="140" width="60" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="546" y="162" fill="var(--ink)">feeds</text>
+          <rect x="602" y="140" width="60" height="36" rx="6" fill="var(--surface)" stroke="var(--graph)"/><text x="614" y="162" fill="var(--graph)">store</text>
+          <rect x="670" y="140" width="158" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="682" y="162" fill="var(--ink)">fuel ledger</text>
         </g>
         <!-- contract -->
         <path d="M430,194 V222" stroke="var(--ink-3)" stroke-width="1.3" marker-end="url(#aa)" marker-start="url(#aa)"/>
-        <text x="444" y="214" fill="var(--ink-3)" font-size="11">frames: admit · call · wallet · http · libp2p</text>
+        <text x="444" y="214" fill="var(--ink-3)" font-size="11">frames: admit · answer · call · wallet (signer) · emit</text>
         <!-- kernel -->
-        <rect x="16" y="226" width="828" height="158" rx="12" fill="var(--ground)" stroke="var(--ink)" stroke-width="1.6"/>
+        <rect x="16" y="226" width="828" height="208" rx="12" fill="var(--ground)" stroke="var(--ink)" stroke-width="1.6"/>
         <text x="32" y="250" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="15" font-weight="600">kernel: one per instance (Zig + wasmtime)</text>
-        <rect x="32" y="264" width="520" height="104" rx="8" fill="none" stroke="var(--sandbox)" stroke-dasharray="5 4"/>
-        <text x="44" y="284" fill="var(--sandbox)" font-size="11.5">programs (WASI p1 modules / 0.2 components)</text>
-        <g font-size="11.5" fill="var(--ink)">
-          <rect x="44" y="296" width="92" height="28" rx="5" fill="var(--surface)" stroke="var(--keys)"/><text x="54" y="314">front door</text>
-          <rect x="144" y="296" width="96" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="154" y="314">messagebox</text>
-          <rect x="248" y="296" width="68" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="258" y="314">wallet</text>
-          <rect x="324" y="296" width="56" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="334" y="314">loop</text>
-          <rect x="388" y="296" width="72" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="398" y="314">overlay</text>
-          <rect x="468" y="296" width="72" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="478" y="314">resolve</text>
-          <rect x="44" y="332" width="200" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="54" y="350">shell · git · qjs · python</text>
-          <rect x="252" y="332" width="288" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="262" y="350">run · objects · head · subscribe</text>
+        <g font-size="11.5">
+          <text x="32" y="281" fill="var(--ink-3)">four tables</text>
+          <rect x="128" y="262" width="80" height="28" rx="5" fill="var(--surface)" stroke="var(--ink-3)"/><text x="140" y="281" fill="var(--ink)">objects</text>
+          <rect x="216" y="262" width="138" height="28" rx="5" fill="var(--surface)" stroke="var(--ink-3)"/><text x="228" y="281" fill="var(--ink)">heads · owners</text>
+          <rect x="362" y="262" width="122" height="28" rx="5" fill="var(--surface)" stroke="var(--ink-3)"/><text x="374" y="281" fill="var(--ink)">dispatch table</text>
+          <rect x="492" y="262" width="110" height="28" rx="5" fill="var(--surface)" stroke="var(--ink-3)"/><text x="504" y="281" fill="var(--ink)">address book</text>
         </g>
-        <rect x="568" y="264" width="260" height="104" rx="8" fill="none" stroke="var(--graph)"/>
-        <text x="580" y="284" fill="var(--graph)" font-size="11.5">store (any key → bytes store)</text>
+        <rect x="32" y="304" width="520" height="114" rx="8" fill="none" stroke="var(--sandbox)" stroke-dasharray="5 4"/>
+        <text x="44" y="324" fill="var(--sandbox)" font-size="11.5">apps, each under its own name (WASI modules / components)</text>
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="44" y="336" width="92" height="28" rx="5" fill="var(--surface)" stroke="var(--keys)"/><text x="54" y="354">front door</text>
+          <rect x="144" y="336" width="96" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="154" y="354">messagebox</text>
+          <rect x="248" y="336" width="72" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="258" y="354">resolve</text>
+          <rect x="328" y="336" width="68" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="338" y="354">wallet</text>
+          <rect x="404" y="336" width="60" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="414" y="354">chain</text>
+          <rect x="472" y="336" width="68" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="482" y="354">static</text>
+          <rect x="44" y="374" width="250" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="54" y="392">shell: sh · git · qjs · python</text>
+          <rect x="302" y="374" width="56" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="312" y="392">chat</text>
+          <rect x="366" y="374" width="174" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="376" y="392">overlays · your own</text>
+        </g>
+        <rect x="568" y="304" width="260" height="114" rx="8" fill="none" stroke="var(--graph)"/>
+        <text x="580" y="324" fill="var(--graph)" font-size="11.5">store (any key → bytes store)</text>
         <g font-size="11" fill="var(--ink-2)">
-          <text x="580" y="306">records by CID</text>
-          <text x="580" y="324">log · chains · MST index maps</text>
-          <text x="580" y="342">one state record</text>
-          <text x="580" y="360" fill="var(--graph)">= the instance's one pointer</text>
+          <text x="580" y="348">records by CID</text>
+          <text x="580" y="366">log · chains · MST index maps</text>
+          <text x="580" y="384">one state record</text>
+          <text x="580" y="402" fill="var(--graph)">= the instance's one pointer</text>
         </g>
       </svg>
     </div>
-    <p class="figcap">The runtime judges nothing. Everything that matters is decided by programs inside the kernel and written to the store.</p>
+    <p class="figcap">The host judges nothing and routes nothing. The kernel’s dispatch table routes, and everything that matters is decided by programs inside the kernel and written to the store.</p>
   </div>
 
   <div class="prose block">
     <h2>Kernel</h2>
-    <p>The machine: store, log, scheduler, the WASI implementation and skein’s own imports, over wasmtime (C API, statically linked). One implementation, <code>kernel-zig</code>, which also compiles to <code>wasm32-freestanding</code> for the browser. CLI: <code>skein-kernel serve | replay | shell | dump | fuel</code>.</p>
+    <p>The machine: store, log, scheduler, the WASI implementation and skein’s own imports, over wasmtime (C API, statically linked). It keeps four tables: objects (blocks by hash), heads (each with an owner), the dispatch table, and the address book. The owner’s admin messages change them, and the kernel does that itself; no program can. One implementation, <code>kernel-zig</code>, which also compiles to <code>wasm32-freestanding</code> for the browser. CLI: <code>skein-kernel serve | replay | shell | dump | fuel</code>.</p>
 
-    <h2>Programs and the SDK</h2>
-    <p>A catalogue, not a fixed set: front door, messagebox, wallet, resolve, overlay, fetch, p2p, the workbench programs (<code>run</code>, <code>objects</code>, <code>head</code>, <code>subscribe</code>, <code>loop</code>) and the SDK they’re written against. Each genesis wires its own subset; none is mandatory. The stock programs are Zig, 70–670 KB each.</p>
+    <h2>Apps and the SDK</h2>
+    <p>Everything outside the kernel is an app, installed under its own name: the front door, the messagebox, resolve, the wallet, the chain app, the shell, the chat app, overlays, static sites. An app is a tree of programs with a manifest. It moves only heads under its own name, reads any record whose hash it holds, and a call to another app hands back hashes, not data. A skein installs only the apps it uses. All are written against skein-sdk, a Zig package. The handler programs are Zig, about 100–670 KB each.</p>
 
-    <h2>Runtimes</h2>
-    <p>Whatever drives a kernel from outside. A runtime implements one contract: admitting entries, making calls, giving the kernel a store, and answering its outbound requests (signing, HTTP, libp2p). How it holds keys, where it stores bytes and how it’s deployed are its own business. Today there’s a server runtime and a browser runtime, and the same history replays under either.</p>
+    <h2>Hosts</h2>
+    <p>Whatever drives a kernel from outside: transports, providers, a store and the signer. A host appends what its transports carry in, holds a waiting client until its request’s thread comes to rest, answers the kernel’s signing requests, and carries out what the skein emits through its providers: a web proxy, a broadcaster, a waker, cron, a libp2p node. A provider may be the host’s or anyone’s; the skein knows it only as an address in its book. How a host holds keys, where it stores bytes and how it’s deployed are its own business. There’s a server host and a browser host, and the same history replays under either.</p>
 
     <h2>The kernel’s whole surface</h2>
     <dl class="swap">
-      <div><dt>admit</dt><dd>The one call in that writes: append a log entry, then run the steps it drives.</dd></div>
-      <div><dt>call</dt><dd>Run a program function over current state. No entry, no writes, not replayed; its fuel goes to the host’s ledger. Every web read is one of these.</dd></div>
-      <div><dt>wallet</dt><dd>Out: key operations, answered by the runtime’s signer.</dd></div>
-      <div><dt>http</dt><dd>Out: a request, made by the runtime’s proxy and recorded with its response on the step. The proxy signing both is designed.</dd></div>
-      <div><dt>libp2p</dt><dd>Out: publish, dial, send, receive, close. Recorded like http.</dd></div>
+      <div><dt>admit</dt><dd>The one call in that writes: append a package as it arrived, then run the steps it drives.</dd></div>
+      <div><dt>answer</dt><dd>Wait until a request’s thread comes to rest, and return its answer. This is how a waiting web client gets its reply.</dd></div>
+      <div><dt>call</dt><dd>Run a program function over current state. No entry, no writes, not replayed; its fuel goes to the host’s ledger. Only for host-side reads that are not requests, such as the explorer’s pages.</dd></div>
+      <div><dt>wallet</dt><dd>Out: key operations, answered by the host’s signer. The one call recorded on the step.</dd></div>
+      <div><dt>emit</dt><dd>Out: committed messages for providers and peers, and broadcast transactions, carried by the host after the step ends.</dd></div>
     </dl>
   </div>
 
@@ -95,7 +104,7 @@
     <p class="label" style="margin-bottom:8px">Families of record</p>
     <dl class="swap head">
       <div><dt>Family</dt><dd>Codec · hash · what the CID equals</dd></div>
-      <div><dt>skein</dt><dd><code>dag-cbor</code> · sha2-256. Log entries, thread origins and updates, messages, index nodes, the state record.</dd></div>
+      <div><dt>skein</dt><dd><code>dag-cbor</code> · sha2-256. Log entries, thread origins and updates, messages, head updates (with their owner), dispatch-table changes, app records, index nodes, the state record.</dd></div>
       <div><dt>git</dt><dd><code>git-raw</code> · sha1. <b>A tree’s CID is its git object id.</b> A scanned directory hashes identically to <code>git write-tree</code>.</dd></div>
       <div><dt>bitcoin</dt><dd><code>bitcoin-block</code> (0xb0) · dbl-sha2-256: CID = block hash. <code>bitcoin-tx</code> (0xb1): CID = txid. Exactly 64 bytes under <code>bitcoin-tx</code> is a Merkle node, whose CID is its Merkle hash.</dd></div>
       <div><dt>raw</dt><dd>Wasm modules and the Python stdlib.</dd></div>
@@ -161,17 +170,17 @@
 
   <div class="prose block">
     <h2>Git mapping</h2>
-    <p>A repository in a tree is an ordinary git repository, except that <code>.git/objects</code> is synthetic: each loose object is served on the fly from its <code>git-raw</code> record, and writes are inflated, sha1-checked and kept as records. No object is stored twice, and there are no packs. An agent’s deployed tree <i>is</i> its repository’s tree.</p>
+    <p>A repository in a tree is an ordinary git repository, except that <code>.git/objects</code> is synthetic: each loose object is served on the fly from its <code>git-raw</code> record, and writes are inflated, sha1-checked and kept as records. No object is stored twice, and there are no packs. A deployed tree <i>is</i> its repository’s tree.</p>
 
     <h2>Bitcoin mapping</h2>
-    <p>Headers decode to <code>{version, previousblockhash → link, merkleroot → link, time, bits, nonce}</code>; transactions to <code>{version, vin: [{txid → link, vout, …}], vout, locktime}</code>, with bitcoind’s field names. Proofs are held sparsely: receiving a BUMP (BRC-74) checks its root against the header at that height, then stores each node it reveals. Conflicting nodes and wrong roots are refused. A <code>proofs</code> map records txid → <code>{block, depth, position}</code>, and a proof is rebuilt by walking down from the header by the position’s bits.</p>
+    <p>Headers decode to <code>{version, previousblockhash → link, merkleroot → link, time, bits, nonce}</code>; transactions to <code>{version, vin: [{txid → link, vout, …}], vout, locktime}</code>, with bitcoind’s field names. Proofs are held sparsely: receiving a BUMP (BRC-74) checks its root against the header at that height, then stores each node it reveals. Conflicting nodes and wrong roots are refused. A <code>proofs</code> map records txid → <code>{block, depth, position}</code>, and a proof is rebuilt by walking down from the header by the position’s bits. The chain app keeps this map under <code>chain/</code>, one copy for the whole skein.</p>
 
     <h2>Chains</h2>
-    <p>Anything that changes is a chain: an <b>origin</b> (its identity) and <b>updates</b> carrying <code>origin</code>, <code>prev</code> and <code>seq</code>. Point at the origin for “as it is now”, at an update for “exactly this version”. Threads, heads, subscriptions and the address book are all chains.</p>
+    <p>Anything that changes is a chain: an <b>origin</b> (its identity) and <b>updates</b> carrying <code>origin</code>, <code>prev</code> and <code>seq</code>. Point at the origin for “as it is now”, at an update for “exactly this version”. Threads, heads, the dispatch table and the address book are all chains.</p>
 
     <h2>The index and the state record</h2>
-    <p>The store is a key→bytes map plus one pointer. Each query the scheduler needs is its own Merkle search tree (fan-out ~32, canonical: the same pairs give the same root in any order): <code>log</code>, <code>unique</code>, <code>chains</code>, <code>threads</code>, <code>resting</code>, <code>sleepers</code>, <code>awaits</code>, <code>edges</code>, <code>heads</code>. One <code>skein-state</code> record holds the log tip and every map’s root. Its CID is the instance’s single mutable pointer and a function of the log: same log, same state CID.</p>
-    <p class="quiet">Cost: 2.5–7.5 new index nodes (0.6–4.2 KiB) plus ~1 KiB of state records per log entry. Pruning old index history is designed, not built.</p>
+    <p>The store is a key→bytes map plus one pointer. Each query the scheduler needs is its own Merkle search tree (fan-out ~32, canonical: the same pairs give the same root in any order): <code>log</code>, <code>unique</code>, <code>chains</code>, <code>updates</code>, <code>threads</code>, <code>resting</code>, <code>sleepers</code>, <code>awaits</code>, <code>edges</code>, <code>heads</code>. One <code>skein-state</code> record holds the log tip and every map’s root. Its CID is the instance’s single mutable pointer and a function of the log: same log, same state CID.</p>
+    <p class="quiet">Cost: 2.5–7.5 new index nodes (0.6–4.2 KiB) plus ~1 KiB of state records per log entry. A store may forget what no head reaches, and the log before its last checkpoint.</p>
 
     <h2>Edges</h2>
     <p>The <code>edges</code> map indexes who points at what, derived from records a step <i>keeps</i>: <code>launched-by</code>, <code>depends-on</code>, <code>resolves</code>, record <code>refs</code>, and <code>spends</code> for kept transactions’ inputs. “Who spent txid:vout” is a prefix scan. Rejection propagates along <code>spends</code>, <code>admits</code> and <code>derives-from</code>.</p>
@@ -196,26 +205,29 @@
     <h2>ABIs</h2>
     <p>Programs are WASI preview1 core modules or WASI 0.2 components (world <code>skein:kernel/handler</code>). The kernel tells them apart by the binary preamble and gives both one behaviour: 0.2 filesystem and io calls are answered by the preview1 implementation. Imports the kernel doesn’t answer (sockets, say) link as traps.</p>
 
-    <h2>Two kinds of syscall</h2>
+    <h2>Syscalls</h2>
     <dl class="swap">
       <div><dt>Pure</dt><dd>Files, pipes, spawn, stdio, clock, random. Answered inside, deterministically, never recorded.</dd></div>
-      <div><dt>Recorded</dt><dd><code>wallet</code>, <code>http</code>, <code>libp2p</code>. The request and answer are written on the step’s update; replay serves them from there, and a request that differs on replay is a divergence.</dd></div>
-      <div><dt>Graph</dt><dd><code>get</code>/<code>put</code>/<code>putblock</code> by CID, <code>keep</code>, <code>launch</code>, <code>await</code>, <code>advance</code> (heads), <code>subscribe</code>, <code>deadline</code>, <code>edges</code>, <code>call</code>.</dd></div>
+      <div><dt>Recorded</dt><dd><code>wallet</code> only: the signer. The request and answer are written as a record of the step; replay serves them from there, and a request that differs on replay is a divergence.</dd></div>
+      <div><dt>Reads</dt><dd><code>input</code>, <code>get</code> by CID, <code>head</code>, <code>edges</code>. Global: any program reads any record it holds the CID of.</dd></div>
+      <div><dt>Writes</dt><dd><code>put</code>, <code>putblock</code>, <code>keep</code>, <code>advance</code>. <code>advance</code> only moves heads under the program’s own app name.</dd></div>
+      <div><dt>Threads</dt><dd><code>launch</code>, <code>await</code> (a record, a subject or another thread), <code>deadline</code>, <code>call</code>.</dd></div>
+      <div><dt>Out</dt><dd><code>emit</code>: a signed message to a key in the address book, or a broadcast transaction. Sent when the step ends; the answer is a new entry.</dd></div>
     </dl>
 
     <h2>Time</h2>
-    <p>The runtime stamps each entry at admission. Inside a step, <code>t = max(last + 1, stamp + fuel)</code>, one unit of fuel per clock tick: time never repeats, never goes back, and is recomputed exactly on replay. A shell and its children share one meter and one clock. Busy-waits end on their own. Sleep is a deadline; the waker admits one <code>wake</code> entry when it comes, and there are no periodic wake-ups.</p>
+    <p>The host stamps each entry at admission. Inside a step, <code>t = max(last + 1, stamp + fuel)</code>, one unit of fuel per clock tick: time never repeats, never goes back, and is recomputed exactly on replay. A shell and its children share one meter and one clock. Busy-waits end on their own. Sleep and deadlines are a message to the waker, whose answer wakes the thread. A recurring job is a schedule a program sends to the cron provider. There are no wake entries.</p>
 
     <h2>Randomness</h2>
     <p>SHA-256(key ‖ counter) blocks, key = SHA-256(entry CID ‖ thread CID). Python’s <code>random</code>, <code>uuid4</code>, QuickJS <code>Math.random</code> and git’s temp names all draw on it and replay identically. It’s predictable from public records, so secrets are made by the signer instead.</p>
 
     <h2>Fuel</h2>
-    <p>wasmtime fuel is on for every step and summed across everything in it (handler, shell, children, nested calls). The limit is <code>fuelPerStep</code> (default 10<sup>12</sup>); running out ends the step <code>errored</code>, deterministically, and it’s never retried. Kernel calls have their own limit (10<sup>10</sup>) and are charged to the host ledger. <code>skein-kernel fuel</code> is the billing query. Overhead is 0–9%. In the browser, where V8 has no fuel, the kernel instruments each module to count its own, and the counts match wasmtime’s.</p>
+    <p>wasmtime fuel is on for every step and summed across everything in it (handler, shell, children, nested calls). The limit is <code>fuelPerStep</code> (default 10<sup>12</sup>); running out ends the step <code>errored</code>, deterministically, and it’s never retried. Kernel calls and the front door’s request steps have their own limit (10<sup>10</sup>); a kernel call’s fuel is charged to the host ledger. <code>skein-kernel fuel</code> is the billing query. Overhead is 0–9%. In the browser, where V8 has no fuel, the kernel instruments each module to count its own, and the counts match wasmtime’s.</p>
 
     <h2>Replay</h2>
-    <p><code>skein-kernel replay</code> rebuilds a store from its log with no wallet or network. The equivalence suite replays 16 real histories twice, natively, instrumented and in headless Chrome, and requires identical dumps, fuel and explorer pages. Signatures are deterministic (RFC 6979), so they replay too. Crash recovery is replay at hydrate time: a cut-off step runs again.</p>
+    <p><code>skein-kernel replay</code> rebuilds a store from its log with no wallet or network. The equivalence suite replays 18 real histories twice, natively, instrumented and in headless Chrome, and requires identical dumps, fuel and explorer pages. Signatures are deterministic (RFC 6979), so they replay too. Crash recovery is replay at hydrate time: a cut-off step runs again.</p>
 
-    <h2>Userland</h2>
+    <h2>Userland: the shell app</h2>
     <ul>
       <li><b>Shell</b>: brush (bash-compatible, Rust) over uutils coreutils, plus find, xargs, diff, jq (jaq), sed, awk, tree and grep. Pipelines run stage by stage, with 64 MiB pipes.</li>
       <li><b>git 2.55</b> in C via wasi-sdk: init to merge (three-way, conflicts), tag, fsck. No remotes, no packs. Commit dates come from the in-step clock, so commit IDs replay.</li>
@@ -224,7 +236,7 @@
     </ul>
 
     <h2>Browser build</h2>
-    <p>The same kernel for <code>wasm32-freestanding</code> (2.4 MB) in a Worker, with IndexedDB as the store. It needs cross-origin isolation. It runs preview1 modules only, with no libp2p yet. Logs cross between browser and native in both directions.</p>
+    <p>The same kernel for <code>wasm32-freestanding</code> (2.4 MB) in a Worker, with IndexedDB as the store. It needs cross-origin isolation. It runs preview1 modules only, and has no libp2p. Logs cross between browser and native in both directions.</p>
   </div>
 
   <div class="deeper">
@@ -240,46 +252,49 @@
 <article data-page="t-net" style="--pc:var(--keys)">
   <span class="pagekicker">Technical</span>
   <h1 class="page-h">Messages and network</h1>
-  <p class="lede">The instance is an HTTP server. BRC-103/104 is the network, BRC-33 is the mailbox, BRC-169 is discovery, and only messages are state.</p>
+  <p class="lede">The instance is an HTTP server. BRC-103/104 is the network, BRC-33 is the mailbox, BRC-169 is discovery, and every package that arrives is written as received.</p>
 
   <div class="prose block">
     <h2>The front door</h2>
-    <p>Each instance has its own origin (<code>&lt;handle&gt;.host</code>, or <code>/@handle</code>). The runtime forwards every request as one kernel <code>call</code> of the front-door program, which runs the BRC-103/104 handshake and verifies each message inside the VM. The caller is the identity key the session proved; there are no accounts. Answers are signed on the session through the runtime’s signer.</p>
-    <p><code>etc/routes.json</code> maps paths to program functions (auth defaults to BRC-104; <code>"none"</code> is for open routes like overlay submit). <code>etc/reads.json</code> gates read routes by caller. A handler answers <code>{status, body, admit?, then?}</code>, and <code>admit</code> lists the entries to write.</p>
+    <p>Each instance has its own origin (<code>&lt;handle&gt;.host</code>, or <code>/@handle</code>). The host appends every request as received, and the kernel runs the front-door program on it as that request’s own thread: the BRC-103/104 handshake and the check of each message happen inside the VM. The host holds the client’s connection until the thread comes to rest. The caller is the identity key the session proved; there are no accounts. Answers are signed on the session through the signer.</p>
+    <p>Routes are <code>http</code> rows of the dispatch table: a path or prefix, who may call it (<code>"session"</code> for any BRC-104 session, a key, or <code>"*"</code> for an open route like an overlay’s submit), and the program function to call. <code>etc/reads.json</code> gates read routes by caller. A handler answers <code>{status, type?, body, headers?, admit?}</code>; <code>{wait: true}</code> if the answer depends on a thread still running; or <code>{read: true}</code> for a live read. <code>admit</code> lists the messages and events to route.</p>
 
     <h2>The persistence rule</h2>
     <dl class="swap">
-      <div><dt>Message arrives</dt><dd>One <code>mail</code> entry, carrying the signed BRC-104 request, so authorship verifies from the log with keys alone.</dd></div>
-      <div><dt>Read or poll</dt><dd>Nothing. Tested at 10,000 polls: 0 entries, 0 bytes.</dd></div>
-      <div><dt>Handshake</dt><dd>Nothing. Sessions are held in memory, never in the log; after a restart the client simply handshakes again.</dd></div>
-      <div><dt>Acknowledgement</dt><dd>One entry: the reader’s pointer moves.</dd></div>
-      <div><dt>Sending</dt><dd>Part of the sending step: a recorded <code>http</code> call and the record it put. Not an entry.</dd></div>
+      <div><dt>Message arrives</dt><dd>Its request, as received, is one entry. The front door’s step routes the <code>mail</code> record it carries; that record keeps the signed BRC-104 request, so authorship verifies from the log with keys alone.</dd></div>
+      <div><dt>Read or poll</dt><dd>Its request entry, and nothing else moves. Growth is a pruning question.</dd></div>
+      <div><dt>Handshake</dt><dd>Its request entry. The step writes the session under the head <code>frontdoor/sessions</code>, so sessions survive a restart (they expire after a day).</dd></div>
+      <div><dt>Acknowledgement</dt><dd>Its request entry; the step admits an <code>:ack</code> event and the reader’s pointer moves.</dd></div>
+      <div><dt>Sending</dt><dd>Part of the sending step: the signed message it emitted, listed on the update. Not an entry. The answer is an entry.</dd></div>
     </dl>
 
-    <h2>Routing inside</h2>
-    <p>A body with <code>replyTo</code> resumes the thread awaiting that record, but only from the identity it was sent to. Otherwise a message is routed by subscription on <code>(sender, box)</code>, first match wins. “A subscription is the permission”; the subscription table is itself a chain. No match means it’s recorded and nothing runs.</p>
+    <h2>The dispatch table</h2>
+    <p>A body with <code>replyTo</code> resumes the thread awaiting that record, but only from the identity it was sent to. Otherwise it is routed by the dispatch table: one table of rows (transport, address, sender, program) for message boxes, web paths and libp2p topics alike, first match wins. A row is the permission. The table is a chain that only the kernel writes, on admin messages from the owner or a delegate. No match means it’s recorded and nothing runs.</p>
 
     <h2>Mailboxes, delivery, discovery</h2>
     <ul>
       <li><b>Messagebox program</b>: BRC-33 send/list/ack (JSON or BRC-231 CBOR). An instance’s own boxes keep no list: admission is the acknowledgement, and the log is the queue.</li>
       <li><b>Mailbox instances</b>: an outside identity (a person, the inference peer, a browser tab) gets an instance with only the front door and messagebox. There’s no separate messagebox host.</li>
-      <li><b>Delivery</b>: <code>send</code> looks up the address book (head <code>peers</code>: key → mailbox URL), reuses a BRC-104 session, and POSTs as a recorded call. Transient and permanent failures are distinguished; an unknown key is “no route”.</li>
-      <li><b>Discovery</b> (BRC-169) is a program, not core: manifest, then handle → identity key and messagebox, as recorded calls.</li>
+      <li><b>Delivery</b>: an emitted message to a <code>mailbox</code> key is delivered by its own thread. The messagebox program acts as a BRC-103/104 client of the recipient’s messagebox, and each HTTP exchange is a message to the web proxy (the <code>fetch</code> provider). Its sessions are kept under the head <code>outbound</code>. The address book (head <code>peers</code>) maps key → transport (<code>mailbox</code>, <code>libp2p</code>, <code>local</code>) and address. Transient failures are retried; an unknown key is “no route”.</li>
+      <li><b>Discovery</b> (BRC-169) is a program, not core: manifest, then handle → identity key and messagebox, each lookup a message to the web proxy.</li>
     </ul>
 
+    <h2>One way out: emit and the providers</h2>
+    <p>A step never talks to the network. It emits a signed message to a key in the address book, ends waiting, and the answer is an entry that steps it again. Providers are recipients with keys of their own: <code>fetch</code> (a web proxy), <code>waker</code>, <code>cron</code> and <code>libp2p</code>. Each answers with a signed message. A provider may be the host’s or anyone’s: it is a row in the address book. A broadcast is an unsigned event that the broadcaster queues and retries; the proof comes back as an event, and status reports come from the Arcade the skein broadcast to.</p>
+
     <h2>Inference protocol</h2>
-    <p>The loop sends <code>{model, thinking?, tools?, parent?, nodes}</code>, where <code>nodes</code> are only the turn records new since the last request, each with its CID and <code>parent</code>. The inference peer stores nodes per sender, walks back to the root and sends the engine the whole chat. If it lacks a node it answers <code>{missing: [cid]}</code> and the loop resends once. The completion arrives as mail with <code>replyTo</code>, and resumes the thread.</p>
+    <p>The chat app’s loop sends <code>{model, thinking?, tools?, parent?, nodes}</code>, where <code>nodes</code> are only the turn records new since the last request, each with its CID and <code>parent</code>. The inference peer stores nodes per sender, walks back to the root and sends the engine the whole chat. If it lacks a node it answers <code>{missing: [cid]}</code> and the loop resends once. The completion arrives as mail with <code>replyTo</code>, and resumes the thread.</p>
 
     <h2>libp2p</h2>
-    <p>The runtime runs a libp2p node for each instance that asks for one (GossipSub with strict signing). Inbound arrives as front-door calls; an accepted topic message is one <code>p2p</code> entry that re-verifies from the log; duplicates and rejects write nothing. Outbound is the recorded <code>libp2p</code> import. The peer key is separate from the identity key and never holds funds.</p>
-    <p class="quiet">Designed, not built: the front door forwarding admitted entries on every transport (today a transaction arriving by pubsub doesn’t persist overlay state the way <code>POST /submit</code> does).</p>
+    <p>The host runs a libp2p node (GossipSub with strict signing) for each instance whose dispatch table has libp2p rows, and follows the table live as apps are installed. Each topic message or stream frame is appended as a request and the front door judges it; an accepted message admits what a web submission would. A rejected one is refused and kept in the history; a repeat is ignored. Outbound is a message to the libp2p provider: publish, dial, send, close. The peer key is separate from the identity key and never holds funds.</p>
+    <p class="quiet">A transaction submitted over pubsub persists exactly what <code>POST /submit</code> persists, and overlays gossip what they admitted and its proofs (<code>&lt;topic&gt;</code>, <code>-admit</code>, <code>-proof</code>).</p>
   </div>
 
   <div class="deeper">
     <span class="label">Next</span>
     <div class="cards">
       <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>The signer and what it signs.</span></a>
-      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>Where routes and subscriptions come from.</span></a>
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>Where the dispatch table’s rows come from.</span></a>
     </div>
   </div>
 </article>
@@ -288,27 +303,27 @@
 <article data-page="t-wallet" style="--pc:var(--keys)">
   <span class="pagekicker">Technical</span>
   <h1 class="page-h">Wallet and overlays</h1>
-  <p class="lede">The wallet is split in two: the keys stay outside with the runtime’s signer, and wallet state lives inside as records. The overlay node shares the same chain and settlement core.</p>
+  <p class="lede">The wallet is split in two: the keys stay outside with the host’s signer, and wallet state lives inside as records. One chain app owns the chain state under <code>chain/</code>; the wallet and each overlay keep their own records under their own names and read it.</p>
 
   <div class="prose block">
     <h2>The signer</h2>
-    <p>The kernel holds no keys. Key operations (get public key, sign, encrypt/decrypt, HMAC, verify) are requests to the runtime’s signer, which might be a hosting service’s key store, a hardware module, or the user’s own BRC-100 wallet in a browser tab. A signing request carries a key reference and a 32-byte hash, nothing else. How keys are made, stored and derived is the runtime’s business and outside the skein.</p>
+    <p>The kernel holds no keys. Key operations (get public key, sign, encrypt/decrypt, HMAC, verify) are requests to the host’s signer, which might be a hosting service’s key store, a hardware module, or the user’s own BRC-100 wallet in a browser tab. A signing request carries a key reference and a 32-byte hash, nothing else. How keys are made, stored and derived is the host’s business and outside the skein.</p>
 
     <h2>The wallet program</h2>
-    <p><code>wallet-zig</code> over bsvz, compiled to wasm. Operations include <code>headers</code>, <code>internalize</code> (BRC-100 internalizeAction on Atomic BEEF), <code>proof</code>, <code>createAction</code>, <code>signAction</code> and <code>list</code>. The builder picks the largest spendable outputs first, sends change to a fresh BRC-29 key, and returns Atomic BEEF with ancestry back to proven transactions. It matches go-sdk’s ProtoWallet byte for byte on shared test vectors. A genesis opts into it; it isn’t there by default.</p>
+    <p><code>programs/wallet</code>, built on the SDK’s wallet library over bsvz, compiled to wasm. Operations include <code>headers</code>, <code>internalize</code> (BRC-100 internalizeAction on Atomic BEEF), <code>proof</code>, <code>createAction</code>, <code>signAction</code> and <code>list</code>. The builder picks the largest spendable outputs first, sends change to a fresh BRC-29 key, and returns Atomic BEEF with ancestry back to proven transactions. It matches go-sdk’s ProtoWallet byte for byte on shared test vectors. It is an app: a skein that needs no wallet doesn’t install one.</p>
 
     <h2>SPV and headers</h2>
     <p>The anchor is the network’s genesis header, a constant. Every header must link, meet its proof-of-work target and carry the most work. Difficulty adjustment and timestamps aren’t checked, by decision. A payment validates synchronously or fails. A signing-only wallet needs no headers; the full chain (~72 MB) lives only in an instance fed by a header service. Chronicle rules are on by default.</p>
 
-    <h2>Feeds</h2>
-    <p>The runtime holds subscriptions an instance declares (a header stream, and transaction status callbacks) and admits each item as a plain event entry. It judges nothing: headers and proofs validate themselves inside, and a broadcast status is provisional until there’s a proof.</p>
+    <h2>The chain app</h2>
+    <p>One app holds the chain state (headers, transactions, proofs, spends, broadcasts) under <code>chain/</code>, and nothing else writes it. Its interface is ingest a BEEF. What arrives proven (its proofs check against the headers) is recorded and the caller answered at once. What arrives unproven is recorded and broadcast, and the caller is answered on each change: accepted, proven, rejected. Every unproven transaction it holds has a broadcast registered, so the proof is the answer to that broadcast. Headers from a feed and proofs from the broadcaster come in as plain events and validate themselves inside. Status reports come from the Arcade the skein broadcast to, and stay provisional until there’s a proof. The chain app is the only thing that broadcasts, and the host judges nothing.</p>
 
     <h2>Settlement</h2>
     <p><i>Unproven</i>, <i>proven</i> or <i>rejected</i> is computed, never stored. Rejection bubbles through <code>spends</code> edges; reorgs revert proofs. Settlement is state to read, not an event to push. Threads fork, they don’t replay: a rejection reaches a thread as a new input, and history stays.</p>
 
-    <h2>Overlay node</h2>
-    <p>An instance can serve BRC-22/24 through its own front door (<code>POST /submit</code>, <code>POST /lookup</code>, open auth). Submit decodes the BEEF once into records in the call’s scratch space, runs SPV, and asks topic managers <code>identify(tx: cid, …)</code>. <b>Nothing persists unless a topic admits</b>; otherwise it answers 200 with an empty STEAK and the store is byte-identical. Lookup services keep their own maps and get <code>admitted</code>/<code>spent</code>/<code>rejected</code> hooks. Tested against the stock <code>@bsv/sdk</code> broadcaster and resolver.</p>
-    <p class="quiet">Not built: SHIP/SLAP advertisement, GASP sync, certificates, header catch-up, proofs on demand. One broadcaster per host is designed.</p>
+    <h2>Overlays are apps</h2>
+    <p>An overlay is the overlay engine (shruggr/skein-overlay) plus its own topic managers and lookup services, installed under one name, with its wiring derived from <code>config.overlay</code> and shown to the owner at install. It serves BRC-22/24 at its base URL <code>/&lt;handle&gt;/&lt;app&gt;</code> (<code>/submit</code>, <code>/lookup</code>, open). Submit decodes the BEEF once into the step’s write cache, hands it to the chain app, and asks topic managers <code>identify(tx: cid, …)</code>. <b>Nothing persists unless a topic admits</b>, apart from the request itself; otherwise it answers 200 with an empty STEAK. A transaction is admitted on the first of an accepted status or a validated proof. Lookup services keep their own maps and get <code>admitted</code>/<code>spent</code>/<code>rejected</code> hooks. Each overlay keeps its state under its own name, so two overlays can run on one skein.</p>
+    <p class="quiet">The <code>@bsv/sdk</code> broadcaster and resolver work against an overlay at an origin’s root, but they reject a base URL with a path, so skein does not use them for overlay apps.</p>
   </div>
 
   <div class="deeper">
@@ -329,35 +344,37 @@
   <div class="prose block">
     <h2>The system tree</h2>
 <pre style="font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;overflow-x:auto;margin:0">bin/&lt;name&gt;.wasm | .cid | .json   programs
-etc/config.json                   defaults, peers, feeds, owner, libp2p
-etc/subscriptions.json            (sender, box) → program   (required)
-etc/routes.json                   HTTP path → program fn
+etc/config.json                   defaults, names, feeds, owner, libp2p, scopes
+etc/dispatch.json                 rows: box | HTTP path | libp2p topic → program
 etc/reads.json                    who may call read routes
 SOUL.md, IDENTITY.md, skills/…    the instance's own files</pre>
-    <p>Booting pre-fills the store and writes a genesis naming the tree; processing it sets head <code>main</code>. The genesis also fixes the owner, the default limits and the owner’s mailbox for the life of the store.</p>
+    <p>Booting pre-fills the store and writes a genesis naming the tree; processing it sets head <code>main</code> and seeds the dispatch table: the owner’s four admin rows first, then the tree’s. The genesis also fixes the owner, the default limits, the owner’s mailbox and the providers in the address book. A genesis can be bare: the owner’s admin rows and nothing else, with every app installed on top.</p>
 
     <h2>Two sources, one loader</h2>
     <ul>
       <li><b>A directory</b>, scanned into git objects, or a tree CID already in a store.</li>
       <li><b>A chain packet</b>: a BEEF bag plus a scope CID, verified offline for scope, hashes, completeness and, optionally, chain inclusion. Carriers are <code>OP_FALSE OP_RETURN</code> outputs with <code>ordfs/dir</code> (a gib directory manifest) or <code>ordfs/patch</code>. A gib commit and a clone of it yield the same store.</li>
     </ul>
+    <p>Released apps and snapshots are deployed on chain as Bitcoin transactions, so a genesis or an install can point at an outpoint as well as a git commit.</p>
 
     <h2>Checkpoints</h2>
-    <p>A packet whose scope is a <code>skein-state</code> record is a checkpoint. It restores onto an empty store without rebuilding the index, as long as it runs under the same identity. A stock-system checkpoint is ~88 MB, because it includes the shell and Python.</p>
+    <p>A packet whose scope is a <code>skein-state</code> record is a checkpoint. It restores onto an empty store without rebuilding the index, as long as it runs under the same identity. A checkpoint of a skein with the shell app is ~88 MB, because it includes the shell and Python.</p>
 
     <h2>Deploying files vs booting</h2>
-    <p>Booting sets up a new store. Deploying sends files into a running instance: an agent’s <code>SOUL.md</code>, <code>IDENTITY.md</code> and <code>skills/</code> go in through the <code>objects</code> box as an ordinary signed message from the owner.</p>
+    <p>Booting sets up a new store. Deploying sends files into a running instance: an agent’s <code>SOUL.md</code>, <code>IDENTITY.md</code> and <code>skills/</code> go in as an ordinary signed message from the owner to the kernel’s <code>objects</code> operation.</p>
 
-    <h2>Upgrades are re-genesis</h2>
-    <p>New program versions apply to new geneses; an existing store keeps the modules its genesis names, and older formats aren’t migrated. Upgrading today means a new store.</p>
-    <p class="quiet">Not built: a command that takes a commit ID directly, publishing packets on chain (the packet writer makes never-broadcast transactions for tests), and checkpoints anchored as gib heads.</p>
+    <h2>Installing an app</h2>
+    <p>An app is a tree with <code>etc/app.json</code>: its programs, its configuration, what it provides and requires, the dispatch rows it asks for, and optional start and stop messages. <code>skein-host install &lt;repo | dir&gt; --instance &lt;handle&gt;</code> checks it and reads the rows aloud. Once the owner approves, it sends four kinds of admin message: <code>objects</code> (the tree and program records), <code>head</code> (<code>&lt;app&gt;/app</code> → the app record), <code>dispatch</code> (one per row; web paths under <code>/&lt;app&gt;/</code>), then <code>start</code>. An app writes only heads under its name. Uninstall sends <code>stop</code> and removes its rows. A set of apps that go together installs the same way, one app at a time.</p>
+
+    <h2>Upgrades</h2>
+    <p>An app upgrades by being installed again. Its state is kept, and rows the new version no longer asks for are removed. A change to the kernel’s log format (format 8) means a new store: older formats are refused, not migrated.</p>
   </div>
 
   <div class="deeper">
     <span class="label">Next</span>
     <div class="cards">
       <a href="#t-status"><em>Technical</em><b>What is built</b><span>Status by area.</span></a>
-      <a href="#running"><em>Running one</em><b>Hosting, cost, getting one</b><span>Back to the overview level.</span></a>
+      <a href="#running"><em>Running one</em><b>Hosting</b><span>Back to the overview level.</span></a>
     </div>
   </div>
 </article>
@@ -366,20 +383,21 @@ SOUL.md, IDENTITY.md, skills/…    the instance's own files</pre>
 <article data-page="t-status">
   <span class="pagekicker">Technical</span>
   <h1 class="page-h">What is built</h1>
-  <p class="lede">Status by area, as of the end of September 2026. “Built” means merged, with tests.</p>
+  <p class="lede">Status by area, as of 1 October 2026 (log format 8). “Built” means merged, with tests. This is the one page that says what is built; the rest of the site describes the design.</p>
 
   <div class="block" style="max-width:var(--measure)">
     <div class="levels">
-      <div><h4>Kernel</h4><p><span class="status built">built</span> Zig kernel on wasmtime, both ABIs, fuel, fuel clock, deterministic random, replay, MST index, single state record, browser build.</p></div>
-      <div><h4>Userland</h4><p><span class="status built">built</span> Shell and tools, git, JavaScript, Python. <span class="status">gaps</span> tar/gzip, packages, streaming pipes.</p></div>
-      <div><h4>Network</h4><p><span class="status built">built</span> Front door with BRC-103/104, routes and reads, mailbox instances, messagebox, address book, discovery, libp2p. <span class="status">designed</span> Admitting on every transport.</p></div>
-      <div><h4>Wallet</h4><p><span class="status built">built</span> Signer interface, wallet program, SPV, feeds, sparse proofs, settlement. <span class="status">not yet</span> Header catch-up, proofs on demand, certificates.</p></div>
-      <div><h4>Overlay</h4><p><span class="status built">built</span> Topic managers and lookup services on CIDs. <span class="status">not yet</span> SHIP/SLAP, GASP. <span class="status">designed</span> One broadcaster per host.</p></div>
-      <div><h4>Inference</h4><p><span class="status built">built</span> Inference peer, context deltas, turn records, tool steps. <span class="status">not yet</span> Forking UI, budgets.</p></div>
-      <div><h4>Deployment</h4><p><span class="status built">built</span> System trees, reading chain packets, checkpoints. <span class="status">not yet</span> Publishing on chain, commit-ID boot.</p></div>
-      <div><h4>Hosting &amp; payments</h4><p><span class="status built">built</span> Metering. <span class="status">designed</span> Payment channel billing, stand-up flow, tolls on messages. <span class="status">not yet</span> Public hosting, prices.</p></div>
+      <div><h4>Kernel</h4><p><span class="status built">built</span> Zig kernel on wasmtime, both ABIs, fuel, fuel clock, deterministic random, replay, MST index, single state record, browser build, the four tables (objects, heads with owners, the dispatch table, the address book), admin operations in the kernel, write scope by app name. <span class="status">not yet</span> Pruning; libp2p and components in the browser build.</p></div>
+      <div><h4>Userland</h4><p><span class="status built">built</span> Shell and tools, git, JavaScript, Python. <span class="status">not yet</span> tar/gzip, packages, streaming pipes.</p></div>
+      <div><h4>Network</h4><p><span class="status built">built</span> Front door stepped on every request, sessions as records, the dispatch table, mailbox instances, messagebox, address book, discovery, <code>emit</code> and providers (web proxy, waker, cron, libp2p, status), delivery threads, libp2p on every transport, overlay gossip. <span class="status">not yet</span> Any authenticated HTTP endpoint as a recipient (#82); status reports signed by Arcade itself (the host relays them today).</p></div>
+      <div><h4>Wallet and chain</h4><p><span class="status built">built</span> Signer interface, wallet program, SPV, sparse proofs, settlement, broadcast as an event, the chain app (ingest a BEEF, broadcast, an answer on each change). <span class="status wip">in progress</span> The wallet under its own name, reading the chain app (#79). <span class="status">not yet</span> Header catch-up, proofs on demand, certificates, payments carried on messages.</p></div>
+      <div><h4>Overlay</h4><p><span class="status built">built</span> Overlays as apps, topic managers and lookup services on CIDs, libp2p gossip. <span class="status wip">in progress</span> Each overlay’s state under its own name, two overlays per skein, the chain app as its proof check (#79). <span class="status">not yet</span> SHIP/SLAP, GASP.</p></div>
+      <div><h4>Apps</h4><p><span class="status built">built</span> Manifest, install and uninstall with approval, the app record under <code>&lt;app&gt;/app</code>, start/stop, the SDK’s <code>app.serve</code>; apps in their own repositories (static, overlay, chain). <span class="status wip">in progress</span> Manifests in the dispatch-row shape (#79). <span class="status">not yet</span> The shell and the chat app as two apps (#83); a genesis that states the capabilities it needs (#81); a bare genesis with every app installed on top.</p></div>
+      <div><h4>Inference</h4><p><span class="status built">built</span> Inference peer, context deltas, turn records, tool steps. <span class="status">not yet</span> Forking UI, the graph as a tool for the model, budgets.</p></div>
+      <div><h4>Deployment</h4><p><span class="status built">built</span> System trees, reading chain packets, checkpoints, app upgrade by reinstall. <span class="status">not yet</span> Publishing apps and snapshots on chain, booting or installing from an outpoint or a commit ID.</p></div>
+      <div><h4>Hosting</h4><p><span class="status built">built</span> Metering. <span class="status">not decided</span> Billing, getting a skein from a host. <span class="status">not yet</span> Public hosting.</p></div>
       <div><h4>Graph ops</h4><p><span class="status built">built</span> Heads, git branches and merges, conversation parents, checkpoint restore. <span class="status">not yet</span> Forking or merging whole instances.</p></div>
     </div>
-    <p class="quiet" style="font-size:15.5px;margin-top:14px">Latest suites: kernel 45/45, wallet 25/25, overlay 2/2, npm 124/124, equivalence 199 ok, 0 fail. The tracker is <a href="https://github.com/shruggr/skein/issues/31">issue #31</a>.</p>
+    <p class="quiet" style="font-size:15.5px;margin-top:14px">Latest suites (main 2e55aa2): kernel 35/35, npm 155/155, equivalence all ok (18/18 histories identical, browser replays included). The tracker is <a href="https://github.com/shruggr/skein/issues/31">issue #31</a>.</p>
   </div>
 </article>
