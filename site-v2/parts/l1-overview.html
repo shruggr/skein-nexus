@@ -2,8 +2,8 @@
 <article data-page="overview">
   <div class="hero">
     <div>
-      <h1>A computer with its own keys and a complete memory.</h1>
-      <p class="lede">A skein is a sandbox that holds its own keys. The only way in or out is a signed message or a transaction you can prove on Bitcoin. Everything that happens inside is kept as a history you can branch and merge, the way you work with a git repository.</p>
+      <h1>A computer with a complete, replayable memory.</h1>
+      <p class="lede">A skein is a sandbox with one door. Everything that comes in is signed or proven, and everything a program does inside is kept as a history you can replay, branch and merge, the way you work with a git repository. What it does depends on the apps you install, and it runs the same on any host: a server, a laptop or a browser tab.</p>
     </div>
 
     <div>
@@ -98,7 +98,7 @@
       <div class="pillar" style="--pc:var(--keys)">
         <span class="sw"></span>
         <h3>Keys and the door<small>It has an identity and a wallet.</small></h3>
-        <p>Each skein has its own identity keys and its own Bitcoin wallet. Messages come in signed by their sender, Bitcoin data comes with its proof, and anything the skein asks the outside world for comes back signed by the host that fetched it. You always know who sent what and what was paid.</p>
+        <p>Each skein has its own identity keys and its own Bitcoin wallet. Messages come in signed by their sender, Bitcoin data comes with its proof, and anything the skein asks the outside world for comes back as a signed message from the service that fetched it. You always know who sent what and what was paid.</p>
         <a class="go" href="#keys">Keys and the door</a>
       </div>
       <div class="pillar" style="--pc:var(--graph)">
@@ -114,20 +114,23 @@
       <div><b>A complete record means replay.</b>The sandbox has no hidden inputs, so running a step again from the record gives the same bytes.</div>
       <div><b>Replay means branching is cheap.</b>Any point in the history is a full state. Start from it, try something else, and merge back what works.</div>
     </div>
+
+    <p class="quiet" style="font-size:16px;max-width:var(--measure);margin-top:22px">What a skein does depends on the apps its owner installs: a shell, a wallet, an overlay, a website. Each app is a tree of programs installed under its own name, and writes only there.</p>
+    <p class="quiet" style="font-size:16px;max-width:var(--measure);margin-top:12px">A skein acts on its own: it answers messages, runs scheduled jobs, and pays and gets paid, with no model involved. When a language model decides a skein’s next step, these pages call that skein an <b>agent</b>. The model is one driver among several.</p>
   </section>
 
   <section class="block">
     <p class="label" style="margin-bottom:6px">What you can do with it</p>
     <div class="uses">
-      <a class="use" href="#inference"><span class="k">agents</span><h4>Watch a model work, turn by turn</h4><p>Each inference request and each tool call is a change to the graph. You can read back, replay or branch from any turn, and an agent can look across every conversation, not just its own log.</p></a>
+      <a class="use" href="#inference"><span class="k">models</span><h4>Watch a model work, turn by turn</h4><p>Each inference request and each tool call is a change to the graph. You can read back, replay or branch from any turn, and the model can look across every conversation, not just its own log.</p></a>
       <a class="use" href="#identity"><span class="k">identity</span><h4>Give every agent, and every person, a skein</h4><p>Its own handle, keys, wallet and mailbox. Other people and programs talk to it by public key.</p></a>
       <a class="use" href="#network"><span class="k">network</span><h4>Let skeins work with each other in the open</h4><p>Skeins message and pay each other the same way you message them, and every exchange is signed and kept.</p></a>
-      <a class="use" href="#yourwork"><span class="k">your work</span><h4>One graph over all your work</h4><p>Repositories, machines and agent providers, in one history you can search and trace, whether a person or a program did the work.</p></a>
+      <a class="use" href="#yourwork"><span class="k">your work</span><h4>One graph over all your work</h4><p>Repositories, machines and coding assistants, in one history you can search and trace, whether a person or a program did the work.</p></a>
       <a class="use" href="#bitcoin"><span class="k">bitcoin</span><h4>Your own slice of Bitcoin, indexed and proven</h4><p>Coins, transactions, proofs, headers and overlay data kept by you, for you, instead of by a shared indexer.</p></a>
       <a class="use" href="#anywhere"><span class="k">deploy</span><h4>Start from a commit, run anywhere</h4><p>A skein boots from a git tree, even one published on chain, and runs the same on a server, a laptop or in a browser tab.</p></a>
     </div>
   </section>
 
-  <p class="quiet block" style="font-size:16px;max-width:var(--measure)">Skein is open source and being built now. Pages mark each part as <span class="status built">built</span>, <span class="status wip">in progress</span> or <span class="status">designed</span>. The code is at <a href="https://github.com/shruggr/skein">github.com/shruggr/skein</a>.</p>
+  <p class="quiet block" style="font-size:16px;max-width:var(--measure)">Skein is open source and being built now. These pages describe the design as settled; what is built so far is on the <a href="#t-status">What is built</a> page. The code is at <a href="https://github.com/shruggr/skein">github.com/shruggr/skein</a>.</p>
 </article>
 
