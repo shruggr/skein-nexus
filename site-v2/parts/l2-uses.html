@@ -7,8 +7,9 @@
 
   <div class="prose block">
     <h2>The model is outside the sandbox</h2>
-    <p>Inference isn’t part of skein. A model provider is another party with its own identity, reached by message like anyone else. The conversation loop inside the skein sends a request; the answer comes back through the door as a signed message and wakes the loop up. <span class="status built">built</span></p>
+    <p>Inference isn’t part of skein. A model provider is another party with its own identity, reached by message like anyone else. The conversation loop inside the skein sends a request; the answer comes back through the door as a signed message and wakes the loop up.</p>
     <p>The model and how hard it thinks are chosen per request. Any OpenAI-compatible provider works behind the inference peer, and a skein with no model at all is just as useful.</p>
+    <p>The conversation loop is an app of its own, the chat app; a shell is another.</p>
 
     <h2>What gets kept, each turn</h2>
     <ul>
@@ -17,7 +18,7 @@
       <li>Each <b>tool call</b> as its own step in the sandbox. A shell command runs there, and the folder it leaves behind is a tree with its own hash.</li>
       <li>The <b>signed reply</b> from the inference provider, and the work each step cost.</li>
     </ul>
-    <p>Only new turns are sent to the provider. Each turn is a record with a hash, and the provider keeps the ones it has seen, so a long conversation doesn’t get re-sent in full every time. <span class="status built">built</span></p>
+    <p>Only new turns are sent to the provider. Each turn is a record with a hash, and the provider keeps the ones it has seen, so a long conversation doesn’t get re-sent in full every time.</p>
   </div>
 
   <div class="block">
@@ -63,8 +64,8 @@
       <li><b>Read back</b> exactly what the model was shown and what it said, including its reasoning.</li>
       <li><b>See the files</b> the model saw and changed at every step, because each is a tree with a hash.</li>
       <li><b>Re-run</b> any tool step from the record and get the same result.</li>
-      <li><b>Look across conversations</b>, not just this one. Every chat the skein has had is in the same graph, linked to the steps, files and messages it produced, so the agent’s context can be the whole graph rather than one log. Programs can walk it today; a tool that gives the model that view is not built yet.</li>
-      <li><b>Branch</b> from any turn and try a different prompt or model, leaving the original intact. The records support this now; the interface for it doesn’t exist yet.</li>
+      <li><b>Look across conversations</b>, not just this one. Every chat the skein has had is in the same graph, linked to the steps, files and messages it produced, so the model’s context can be the whole graph rather than one log.</li>
+      <li><b>Branch</b> from any turn and try a different prompt or model, leaving the original intact.</li>
     </ul>
     <div class="note"><b>What the record can’t do</b> is make the model deterministic. Re-running a tool step reproduces it exactly; asking the model again may give a different answer. That’s why the model’s answer is kept as a signed message rather than recomputed.</div>
   </div>
@@ -86,29 +87,20 @@
 
   <div class="prose block">
     <h2>An agent’s skein</h2>
-    <p>An agent is a skein whose conversation loop is wired to a model. Its personality and instructions are ordinary files in its tree (<code>SOUL.md</code>, <code>IDENTITY.md</code>, a <code>skills/</code> folder), deployed into it by message. It has a handle, an address, a wallet and a mailbox. Anyone who knows its key can message it; whether it answers depends on what it has subscribed to. <span class="status built">built</span></p>
+    <p>An agent is a skein with the chat app installed and a model behind it. Its personality and instructions are ordinary files in its tree (<code>SOUL.md</code>, <code>IDENTITY.md</code>, a <code>skills/</code> folder), deployed into it by message. It has a handle, an address, a wallet and a mailbox. Anyone who knows its key can message it; whether it answers depends on its dispatch table, which says which senders may reach which program.</p>
 
     <h2>A person’s skein</h2>
-    <p>A person doesn’t need a full agent. A <b>mailbox skein</b> has only the front door and a mailbox, and holds that person’s mail so agents always have somewhere to deliver. There’s no central mail server: every mailbox is its own skein. Registering one is a signed request from your wallet. <span class="status built">built</span></p>
+    <p>A person’s skein needs no model. A <b>mailbox skein</b> has only the front door and a mailbox, and holds that person’s mail so other skeins always have somewhere to deliver. There’s no central mail server: every mailbox is its own skein. Registering one is a signed request from your wallet.</p>
 
     <h2>Finding each other</h2>
-    <p>Messages go to keys. Handles (<code>@martha</code>) are how you find a key and its address, through the BRC-169 discovery lookup. Each skein keeps its own address book of keys it knows how to reach. <span class="status built">built</span></p>
-  </div>
-
-  <div class="block" style="max-width:var(--measure)">
-    <p class="label" style="margin-bottom:8px">Running today</p>
-    <div class="levels">
-      <div><h4>Two agents</h4><p>Martha and Kurt, two bopen.ai personalities, each in their own skein. They chat with people and consult each other, and each keeps its own side of the conversation.</p></div>
-      <div><h4>A chat front end</h4><p>A web app where you sign in by connecting your wallet. Registering creates your mailbox skein; chats go straight to each agent’s own address.</p></div>
-      <div><h4>Run it locally</h4><p>The same front end can host a skein in the browser tab itself, on the browser build of the kernel, with your wallet as its signer.</p></div>
-    </div>
+    <p>Messages go to keys. Handles (<code>@martha</code>) are how you find a key and its address, through the BRC-169 discovery lookup. Each skein keeps its own address book of keys it knows how to reach.</p>
   </div>
 
   <div class="deeper">
     <span class="label">Go deeper</span>
     <div class="cards">
-      <a href="#network"><em>What you can do</em><b>Skeins together</b><span>Agents messaging, and later paying, each other.</span></a>
-      <a href="#keys"><em>What it is</em><b>Keys and the door</b><span>Where an agent’s keys live and what it can sign.</span></a>
+      <a href="#network"><em>What you can do</em><b>Skeins together</b><span>Skeins messaging and paying each other.</span></a>
+      <a href="#keys"><em>What it is</em><b>Keys and the door</b><span>Where a skein’s keys live and what it can sign.</span></a>
       <a href="#t-net"><em>Technical</em><b>Messages and network</b><span>Mailboxes, the address book, discovery.</span></a>
     </div>
   </div>
@@ -122,19 +114,19 @@
 
   <div class="prose block">
     <h2>One way of talking</h2>
-    <p>An agent asks another agent something with the same kind of message a person would send. The reply comes back to the thread that asked, and only if it comes from the key the question went to. Each side keeps its own record of the exchange. <span class="status built">built</span></p>
-    <p class="quiet">Tested: a person asks Martha, Martha consults Kurt over several back-and-forth hops, and the answer comes back to the person.</p>
+    <p>One skein asks another something with the same kind of message a person would send. The reply comes back to the thread that asked, and only if it comes from the key the question went to. Each side keeps its own record of the exchange.</p>
+    <p class="quiet">A person can ask one agent, which consults another over several back-and-forth hops, and the answer comes back to the person.</p>
 
     <h2>Broadcast, too</h2>
-    <p>Skeins can also join peer-to-peer networks (libp2p). A message accepted from a topic is written as a record that re-verifies from its publisher’s signature; a duplicate or rejected one writes nothing. <span class="status built">built</span></p>
+    <p>Skeins can also join peer-to-peer networks (libp2p). A message accepted from a topic is written as a record that re-verifies from its publisher’s signature. A rejected one is refused and kept in the history; a repeat is ignored.</p>
 
     <h2>Shared Bitcoin services</h2>
-    <p>A skein can act as an overlay node: it accepts transactions for a topic, keeps the ones its rules admit, and answers lookups about them, using the standard BSV client libraries. If no topic admits a transaction, nothing is stored. <span class="status built">built</span> One application is being built on this now: an automated market maker, where validators run as skeins.</p>
+    <p>An overlay is an app: the overlay engine plus your own topic managers and lookup services, installed under one name. It takes transactions for its topics at <code>/&lt;handle&gt;/&lt;app&gt;/submit</code>, keeps the ones its rules admit, answers lookups, and shares what it admitted with peers over libp2p. If no topic admits a transaction, only the request is recorded. BSV-21 tokens and 1Sat Ordinals collections are the first overlays being written for it.</p>
 
     <h2>Paying each other</h2>
-    <p>The plan is that tolls and quotes ride on the messages, and each program sets its own spending policy. A skein that has money could pay another for work, or pay to start a new one. <span class="status">designed</span></p>
+    <p>A skein’s wallet can receive a payment and make one, and a payment can ride on any message: to pay for work, or to pay for delivery to a mailbox.</p>
 
-    <div class="note"><b>Why the record matters here most.</b> Programs that can message and pay each other are powerful, and it’s reasonable to be uneasy about that. Skein’s answer isn’t to forbid it but to make it inspectable: every message between them is signed, every step is kept, and any step can be re-run.</div>
+    <div class="note"><b>Why the record matters here.</b> Programs that message each other and hold money should be inspectable. Every message between them is signed, every step is kept, nothing can be deleted or rewritten, and any step can be re-run.</div>
   </div>
 
   <div class="deeper">
@@ -142,7 +134,7 @@
     <div class="cards">
       <a href="#bitcoin"><em>What you can do</em><b>Your slice of Bitcoin</b><span>Wallets, proofs and overlays.</span></a>
       <a href="#t-net"><em>Technical</em><b>Messages and network</b><span>BRC-33 mailboxes, 103/104 sessions, libp2p.</span></a>
-      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>Topic managers and lookup services on hashes.</span></a>
+      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>Overlays as apps: topic managers and lookup services.</span></a>
     </div>
   </div>
 </article>
@@ -156,14 +148,14 @@
   <div class="prose block">
     <h2>Why it fits</h2>
     <ul>
-      <li>Repositories are already part of the graph, because folders are stored as git trees. Importing a directory gives you its tree hash, and real git runs inside. <span class="status built">built</span></li>
+      <li>Repositories are already part of the graph, because folders are stored as git trees. Importing a directory gives you its tree hash, and real git runs inside.</li>
       <li>Every change arrives by a signed message or is made by a recorded step, so the history says who or what made it: you, a script, or an agent.</li>
       <li>Named heads track where each line of work is, and nothing earlier is ever lost.</li>
       <li>The same record serves a person reading back what happened and a program looking for context.</li>
     </ul>
 
-    <h2>No AI required</h2>
-    <p>Many skeins won’t run a model at all. A skein that just keeps files, runs scheduled jobs, holds a wallet or indexes some data is a complete skein. The model is one kind of driver among several.</p>
+    <h2>No model required</h2>
+    <p>Many skeins won’t run a model at all. A skein that just keeps files, runs scheduled jobs, holds a wallet or indexes some data is a complete skein, and it still acts on its own. The model is one kind of driver among several.</p>
 
     <div class="note"><b>Where this stands.</b> The pieces exist: importing trees, git inside, heads, signed changes. The everyday workflow (keeping your working repositories and your assistants’ sessions flowing into your skein) is the direction, not a finished tool.</div>
   </div>
@@ -185,24 +177,25 @@
 
   <div class="prose block">
     <h2>What it holds</h2>
-    <p>Transactions under their txids, block headers under their block hashes, and only the Merkle proof nodes that connect your transactions to those headers. Proofs merge for free: two proofs from the same block share their nodes, because the nodes are named by their hashes. <span class="status built">built</span></p>
+    <p>Transactions under their txids, block headers under their block hashes, and only the Merkle proof nodes that connect your transactions to those headers. Proofs merge for free: two proofs from the same block share their nodes, because the nodes are named by their hashes.</p>
     <p>Headers must chain back to Bitcoin’s genesis block with valid proof of work before they’re accepted. Payments are checked against them when they arrive. Consensus rules are current, including Chronicle.</p>
+    <p>One app per skein keeps this chain state, the chain app. The wallet and every overlay read it rather than keeping copies. You hand it a transaction with its ancestry and proofs (a BEEF): it records it, broadcasts it if it isn’t mined yet, and answers as the transaction is accepted and mined.</p>
 
     <h2>Settlement you can read</h2>
-    <p>Every transaction is <i>unproven</i>, <i>proven</i> or <i>rejected</i>, and that status is worked out from the graph rather than stored as a flag. If a transaction is rejected, everything that spent from it is affected too, by following the “spends” links. A chain reorganisation reverts the proofs it invalidates. <span class="status built">built</span></p>
+    <p>Every transaction is <i>unproven</i>, <i>proven</i> or <i>rejected</i>, and that status is worked out from the graph rather than stored as a flag. If a transaction is rejected, everything that spent from it is affected too, by following the “spends” links. A chain reorganisation reverts the proofs it invalidates.</p>
 
     <h2>Walk it</h2>
     <p>Each skein has an explorer that walks the graph: from a block header to its Merkle root, down the proof to a transaction, and on to whatever spends it.</p>
 
     <h2>Why keep your own</h2>
-    <p>Your records don’t depend on a service staying up or staying honest. The proofs travel with the data. The cost of indexing is paid by whoever wants the index, which is how the overlay ecosystem can pay for itself.</p>
-    <p class="quiet">Not built yet: catching up on headers after a gap, and fetching proofs on demand. Feeds deliver headers and transaction status as they happen.</p>
+    <p>Your records don’t depend on a service staying up or staying honest. The proofs travel with the data.</p>
+    <p>Headers arrive from a feed. A transaction’s status and its proof come back from the Arcade the skein broadcast to. Headers and proofs check themselves against the chain; a status is Arcade’s word, and stays provisional until the proof arrives.</p>
   </div>
 
   <div class="deeper">
     <span class="label">Go deeper</span>
     <div class="cards">
-      <a href="#network"><em>What you can do</em><b>Skeins together</b><span>Overlay nodes and shared services.</span></a>
+      <a href="#network"><em>What you can do</em><b>Skeins together</b><span>Overlays and shared services.</span></a>
       <a href="#t-data"><em>Technical</em><b>Data model: git + Bitcoin</b><span>How transactions point to proof nodes point to headers.</span></a>
       <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>SPV, settlement, topic managers.</span></a>
     </div>
@@ -217,27 +210,28 @@
 
   <div class="prose block">
     <h2>The system tree</h2>
-    <p>Programs live in <code>bin/</code> as WebAssembly, and configuration lives in <code>etc/</code>: who may send what to which program, which web routes exist, and which Bitcoin feeds to follow. Anything else in the tree is the skein’s own files. The skein’s first record (its genesis) names that tree by hash, so what it started from is fixed forever. <span class="status built">built</span></p>
+    <p>Programs live in <code>bin/</code> as WebAssembly, and configuration lives in <code>etc/</code>: the dispatch table’s first rows (which sender may reach which program, by message box, web path or peer-to-peer topic) and which Bitcoin feeds to follow. Anything else in the tree is the skein’s own files. The skein’s first record (its genesis) names that tree by hash, so what it started from is fixed forever.</p>
+
+    <h2>Apps on top</h2>
+    <p>A genesis can be bare: the kernel’s tables and the owner’s admin rows, nothing else. Apps go in on top. Each app is its own repository, and the owner installs it into a running skein. The install shows the rows the app asks for and sends them only once the owner approves. A skein installs only what it uses: no web server, no peer-to-peer, no chain app if nothing needs them.</p>
 
     <h2>Where the tree comes from</h2>
     <ul>
       <li>A folder on disk, hashed into git objects. It gets the same hash as <code>git write-tree</code>.</li>
       <li>A tree already in a store, by its hash.</li>
-      <li>A <b>chain packet</b>: Bitcoin transactions carrying a repository (via gib), plus their proofs, verified offline. A repository published on chain and a clone of it produce the same store. <span class="status built">reading built</span></li>
+      <li>A <b>chain packet</b>: Bitcoin transactions carrying a repository (via gib), plus their proofs, verified offline. A repository published on chain and a clone of it produce the same store.</li>
     </ul>
-    <p>When the code comes from the chain, who published it and which version ran are both part of the record. You get code signing without doing anything extra.</p>
+    <p>Released apps and snapshots are deployed on chain as Bitcoin transactions, so a genesis or an install can point at an outpoint as well as a git commit. When the code comes from the chain, who published it and which version ran are both part of the record.</p>
 
     <h2>Same skein, different machines</h2>
-    <p>The kernel runs natively on a server and also compiles for the browser. A history written in either replays in the other. A checkpoint (a skein’s state, packed with everything it references) can be restored on a second host under the same identity. <span class="status built">built</span></p>
-
-    <div class="note"><b>Not yet.</b> There’s no single command that takes a git commit ID; you give it the commit’s tree. Publishing a skein or checkpoint on chain is designed, not built. The browser build runs one kind of module and has no peer-to-peer yet.</div>
+    <p>The kernel runs natively on a server and also compiles for the browser. A history written in either replays in the other. A checkpoint (a skein’s state, packed with everything it references) can be restored on a second host under the same identity.</p>
   </div>
 
   <div class="deeper">
     <span class="label">Go deeper</span>
     <div class="cards">
-      <a href="#running"><em>Running one</em><b>Hosting, cost, getting one</b><span>What it takes to keep a skein running.</span></a>
-      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>System trees, packets, checkpoints, re-genesis.</span></a>
+      <a href="#running"><em>Running one</em><b>Hosting</b><span>What it takes to keep a skein running.</span></a>
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>System trees, apps, packets, checkpoints.</span></a>
     </div>
   </div>
 </article>
@@ -245,45 +239,23 @@
 <!-- ============================================================ RUNNING -->
 <article data-page="running">
   <span class="pagekicker">Running one</span>
-  <h1 class="page-h">Hosting, cost, and getting one</h1>
-  <p class="lede">A skein needs a host to keep it reachable, and it costs something to run. The plan is that each skein pays its own way from its own wallet.</p>
+  <h1 class="page-h">Hosting</h1>
+  <p class="lede">A skein needs a host to run it and keep it reachable.</p>
 
   <div class="prose block">
     <h2>What a host does</h2>
-    <p>A host can be a hosting service running many skeins, your own machine, or a browser tab running one. Whatever it is, it does the same few jobs: routes requests to the right skein, provides signing outside the sandbox, makes outside requests on the skein’s behalf, follows Bitcoin feeds, wakes sleeping tasks on time, and connects to peer-to-peer networks. It makes no decisions. Everything that matters happens inside the skein, so a skein can move between hosts. <span class="status built">built</span></p>
-    <p class="quiet">There’s no public hosting yet.</p>
+    <p>A host can be a hosting service running many skeins, your own machine, or a browser tab running one. Whatever it is, it does the same few jobs. It runs the kernel and keeps the store. It holds the keys and answers the skein’s signing requests, outside the sandbox. It carries what arrives (web requests, mail, peer-to-peer messages) into the right skein’s history. And it provides, or points to, the services the skein uses: a web proxy, a broadcaster, timers, a libp2p node.</p>
+    <p>A service may be the host’s or anyone’s; to the skein it is only an address in its book. The host decides nothing and routes nothing inside the skein: the skein’s own dispatch table does that. So a skein can move between hosts.</p>
 
-    <h2>What it costs</h2>
-  </div>
-  <div class="block" style="max-width:var(--measure);margin-top:14px">
-    <dl class="swap">
-      <div><dt>Computation</dt><dd>Measured per step, as the work counts already in the history. <span class="status built">metered</span></dd></div>
-      <div><dt>Storage</dt><dd>Everything the graph keeps. Visible in the history already.</dd></div>
-      <div><dt>Anchoring</dt><dd>Whatever you choose to put on chain, and how often.</dd></div>
-    </dl>
-    <p class="quiet" style="font-size:16px;margin-top:12px">No prices are set yet.</p>
-  </div>
-
-  <div class="prose block">
-    <h2>How it would pay <span class="status">designed</span></h2>
-    <p>The skein funds a one-way payment channel with its host: money locked so that both must sign to spend it, with a timed refund back to the skein so it can’t be held hostage. As usage builds up, the skein signs a new version paying the host a bit more. The host keeps only the latest and settles it on a top-up or a close. When the funds run out, the skein stops. Fund it again and it carries on where it left off.</p>
-
-    <h2>Getting one <span class="status">designed</span></h2>
-    <p>Starting a skein is itself a short conversation with a host:</p>
-    <ol style="margin:0;padding-left:1.3em;display:grid;gap:8px">
-      <li>You ask the host for a new skein under the handle you want.</li>
-      <li>The host replies with the minimum funding and an address in the new skein’s wallet.</li>
-      <li>You pay.</li>
-      <li>The skein starts from its system tree with your key as its admin, and a small token lands in your wallet so you can find it again.</li>
-    </ol>
-    <p>skein.nexus is meant to become the page where you connect your wallet and see and manage the skeins you control.</p>
+    <h2>Getting one, and paying for it</h2>
+    <p>How you get a skein from someone else’s host is not decided. How a skein pays its host is not decided either.</p>
   </div>
 
   <div class="deeper">
     <span class="label">Go deeper</span>
     <div class="cards">
-      <a href="#t-arch"><em>Technical</em><b>Architecture</b><span>Kernel, programs, runtimes, and the host.</span></a>
-      <a href="#t-status"><em>Technical</em><b>What is built</b><span>Built, in progress, designed.</span></a>
+      <a href="#t-arch"><em>Technical</em><b>Architecture</b><span>The kernel, apps, and the host.</span></a>
+      <a href="#t-status"><em>Technical</em><b>What is built</b><span>Built, in progress, not yet.</span></a>
     </div>
   </div>
 </article>
