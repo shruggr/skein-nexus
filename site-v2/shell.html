@@ -1,0 +1,287 @@
+<title>skein.nexus</title>
+<meta name="description" content="A sandbox that holds its own keys, where the only way in or out is a signed message or a provable Bitcoin transaction, and everything that happens is kept as a history you can branch and merge.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="skein.nexus">
+<meta property="og:url" content="https://skein.nexus/">
+<meta property="og:title" content="skein: a computer with its own keys and a complete memory">
+<meta property="og:description" content="A sandbox that holds its own keys, where the only way in or out is a signed message or a provable Bitcoin transaction, and everything that happens is kept as a history you can branch and merge.">
+<meta property="og:image" content="https://skein.nexus/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="skein.nexus: a sandbox with one signed door, guarded by its keys, writing to a graph of history that branches and merges.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="skein: a computer with its own keys and a complete memory">
+<meta name="twitter:description" content="A sandbox that holds its own keys, where the only way in or out is a signed message or a provable Bitcoin transaction, and everything that happens is kept as a history you can branch and merge.">
+<meta name="twitter:image" content="https://skein.nexus/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#F2F3EF;
+  --surface:#FAFAF7;
+  --sunk:#E8EAE4;
+  --ink:#17201D;
+  --ink-2:#47514C;
+  --ink-3:#77817C;
+  --rule:#D5D9D2;
+  --sandbox:#3D5A80;
+  --keys:#9C5F0E;
+  --graph:#0E7563;
+  --accent:#0E6B5B;
+  --display:"Familjen Grotesk","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Newsreader",Charter,Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --measure:66ch;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0F1412; --surface:#151C19; --sunk:#1B2420;
+    --ink:#E5EAE7; --ink-2:#A5AFAA; --ink-3:#74807A; --rule:#26302B;
+    --sandbox:#93B1DC; --keys:#E2A64B; --graph:#4DC3A8; --accent:#5FCDB3;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0F1412; --surface:#151C19; --sunk:#1B2420;
+  --ink:#E5EAE7; --ink-2:#A5AFAA; --ink-3:#74807A; --rule:#26302B;
+  --sandbox:#93B1DC; --keys:#E2A64B; --graph:#4DC3A8; --accent:#5FCDB3;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  background:var(--ground);color:var(--ink);
+  font-family:var(--body);font-size:18px;line-height:1.6;
+  padding-inline:clamp(16px,3.5vw,44px);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.015em;font-weight:600}
+p{margin:0}
+code{font-family:var(--mono);font-size:.82em;background:var(--sunk);padding:.08em .35em;border-radius:3px}
+.label{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+
+/* frame */
+.shell{max-width:1180px;margin-inline:auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:clamp(28px,5vw,72px);padding-block:0 80px}
+.top{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-block:24px 8px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+.brand span{color:var(--ink-3);font-weight:400}
+.top .say{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+
+/* the tree */
+.tree{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;padding-top:28px;font-family:var(--display);font-size:15px}
+.tree ol{list-style:none;margin:0;padding:0}
+.tree li{position:relative}
+.tree .group{margin-top:22px}
+.tree .group > .label{display:block;margin-bottom:6px}
+.tree ol ol{padding-left:14px;border-left:1px solid var(--rule);margin-left:4px}
+.tree a,.tree .todo{display:block;padding:4px 0 4px 10px;color:var(--ink-2);text-decoration:none;line-height:1.3}
+.tree a:hover{color:var(--ink)}
+.tree a[aria-current="page"]{color:var(--ink);font-weight:600}
+.tree a[aria-current="page"]::before{content:"";position:absolute;left:-15px;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--pc,var(--accent))}
+.tree .home a[aria-current="page"]::before{left:-6px}
+.tree .todo{color:var(--ink-3);opacity:.7;cursor:default}
+.tree .todo::after{content:" · later";font-family:var(--mono);font-size:10.5px}
+.tree .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
+.menu-btn{display:none}
+
+/* pages */
+main{min-width:0;padding-top:28px}
+article[data-page]{display:none}
+article[data-page].on{display:block}
+.crumbs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:22px;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.crumbs a{color:var(--ink-3)}
+.depth{display:inline-flex;gap:3px;margin-left:auto;align-items:center}
+.depth i{width:14px;height:5px;border-radius:2px;background:var(--rule);display:block}
+.depth i.f{background:var(--ink-3)}
+.depth b{font-weight:400;margin-left:6px}
+
+.page-h{font-size:clamp(34px,4.6vw,54px);line-height:1.02;letter-spacing:-.03em;max-width:20ch}
+.lede{margin-top:20px;font-size:clamp(19px,1.8vw,22px);line-height:1.5;max-width:52ch;color:var(--ink)}
+.prose{display:grid;gap:18px;max-width:var(--measure)}
+.prose p{color:var(--ink)}
+.prose h2{font-size:clamp(24px,2.6vw,30px);line-height:1.15;margin-top:28px}
+.prose h3{font-size:20px;margin-top:12px}
+.prose ul{margin:0;padding-left:1.2em;display:grid;gap:8px}
+.quiet{color:var(--ink-2)}
+.block{margin-top:clamp(40px,6vw,72px)}
+
+/* home hero */
+.hero{display:grid;gap:clamp(28px,4vw,40px)}
+.hero h1{font-size:clamp(40px,6.2vw,76px);line-height:.98;letter-spacing:-.035em;max-width:14ch;font-weight:700}
+.hero .lede{max-width:46ch}
+.figure{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:clamp(12px,2.5vw,24px);overflow-x:auto}
+.figure svg{display:block;width:100%;min-width:560px;height:auto}
+.figcap{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--ink-3);max-width:var(--measure)}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--rule)}
+.pillar{padding:24px 24px 26px 0;display:grid;gap:12px;grid-template-rows:auto auto 1fr auto;align-content:start}
+.pillar + .pillar{padding-left:24px;border-left:1px solid var(--rule)}
+.pillar .sw{width:28px;height:4px;border-radius:2px;background:var(--pc)}
+.pillar h3{font-size:22px;line-height:1.15}
+.pillar h3 small{display:block;font-family:var(--body);font-weight:400;font-style:italic;font-size:16px;color:var(--ink-2);margin-top:4px;letter-spacing:0}
+.pillar p{font-size:16.5px;line-height:1.55;color:var(--ink-2)}
+.pillar .go{font-family:var(--mono);font-size:12.5px;text-decoration:none}
+.pillar .go::after{content:" →"}
+
+.together{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:22px}
+.together div{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;font-size:16px;line-height:1.5;color:var(--ink-2)}
+.together b{display:block;font-family:var(--display);font-weight:600;color:var(--ink);font-size:16px;margin-bottom:4px}
+
+/* uses */
+.uses{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px;margin-top:8px}
+.use{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;padding-block:16px;border-top:1px solid var(--rule);text-decoration:none;color:inherit}
+.use .k{grid-row:span 2;font-family:var(--mono);font-size:12px;color:var(--ink-3);padding-top:4px;min-width:5.5em}
+.use h4{font-size:18px;color:var(--ink)}
+.use p{font-size:16px;color:var(--ink-2);line-height:1.5}
+a.use:hover h4{color:var(--accent)}
+
+/* go deeper */
+.deeper{margin-top:clamp(48px,7vw,80px);padding-top:22px;border-top:2px solid var(--ink)}
+.deeper .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:14px}
+.deeper a{display:grid;gap:6px;padding:16px 18px;background:var(--surface);border:1px solid var(--rule);border-radius:10px;text-decoration:none;color:var(--ink)}
+.deeper a:hover{border-color:var(--ink-3)}
+.deeper a b{font-family:var(--display);font-weight:600;font-size:17px}
+.deeper a span{font-size:15px;color:var(--ink-2);line-height:1.45}
+.deeper a em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+
+.status{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;border:1px solid var(--rule);color:var(--ink-3);vertical-align:2px;white-space:nowrap}
+.status.built{color:var(--graph);border-color:color-mix(in srgb,var(--graph) 45%,transparent)}
+.status.wip{color:var(--keys);border-color:color-mix(in srgb,var(--keys) 45%,transparent)}
+
+footer{grid-column:1/-1;border-top:1px solid var(--rule);padding-top:18px;font-family:var(--mono);font-size:12px;color:var(--ink-3);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .tree{position:static;padding-top:0}
+  .tree nav{display:none}
+  .tree.open nav{display:block;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+  .menu-btn{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12.5px;background:var(--surface);border:1px solid var(--rule);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer}
+  .pillars{grid-template-columns:minmax(0,1fr)}
+  .pillar,.pillar + .pillar{padding:22px 0;border-left:0}
+  .pillar + .pillar{border-top:1px solid var(--rule)}
+  .together{grid-template-columns:minmax(0,1fr)}
+  .uses{grid-template-columns:minmax(0,1fr)}
+}
+
+/* level 2 */
+.cols2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.swap{margin:6px 0 0;border-top:1px solid var(--rule);max-width:var(--measure)}
+.swap > div{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr);gap:4px 20px;padding-block:12px;border-bottom:1px solid var(--rule)}
+.swap dt{font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink)}
+.swap dd{margin:0;font-size:16.5px;line-height:1.55;color:var(--ink-2)}
+.swap.head > div:first-child dt,.swap.head > div:first-child dd{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:400}
+.note{max-width:var(--measure);background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;font-size:16.5px;line-height:1.55;color:var(--ink-2)}
+.note b{font-family:var(--display);color:var(--ink);font-weight:600}
+.levels{display:grid;gap:0;border-top:1px solid var(--rule);max-width:var(--measure)}
+.levels > div{display:grid;grid-template-columns:minmax(0,8.5em) minmax(0,1fr);gap:4px 20px;padding-block:14px;border-bottom:1px solid var(--rule)}
+.levels h4{font-size:16px}
+.levels p{font-size:16.5px;line-height:1.55;color:var(--ink-2)}
+.fig-inline{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:clamp(10px,2vw,18px);overflow-x:auto;max-width:760px}
+.fig-inline svg{display:block;width:100%;min-width:520px;height:auto}
+.pagekicker{font-family:var(--mono);font-size:12px;color:var(--pc,var(--ink-3));letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:block}
+@media (max-width:860px){.cols2{grid-template-columns:minmax(0,1fr)}.swap > div,.levels > div{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+<div class="shell">
+  <header class="top">
+    <a class="brand" href="#overview">skein<span>.nexus</span></a>
+    <span class="say">skein is pronounced “skane”</span>
+  </header>
+
+  <aside class="tree" id="tree">
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="treeNav">Pages ▾</button>
+    <nav id="treeNav" aria-label="Pages"></nav>
+  </aside>
+
+  <main id="main">
+
+<!-- PAGES -->
+  </main>
+
+  <footer>
+    <span>skein.nexus · draft</span>
+    <span>engine: <a href="https://github.com/shruggr/skein">github.com/shruggr/skein</a></span>
+  </footer>
+</div>
+
+<script>
+// The page tree. `lvl`: 1 overview, 2 in depth, 3 technical. Pages without an <article> show as "later".
+const TREE = [
+  { id:'overview', title:'Overview', lvl:1, home:true },
+  { group:'What it is', items:[
+    { id:'sandbox', title:'The sandbox', lvl:2, color:'sandbox' },
+    { id:'keys', title:'Keys and the door', lvl:2, color:'keys' },
+    { id:'graph', title:'The graph', lvl:2, color:'graph' },
+  ]},
+  { group:'What you can do', items:[
+    { id:'inference', title:'Traceable inference', lvl:2 },
+    { id:'identity', title:'A skein per agent', lvl:2 },
+    { id:'network', title:'Skeins together', lvl:2 },
+    { id:'yourwork', title:'One graph of your work', lvl:2 },
+    { id:'bitcoin', title:'Your slice of Bitcoin', lvl:2 },
+    { id:'anywhere', title:'Start from a commit', lvl:2 },
+  ]},
+  { group:'Running one', items:[
+    { id:'running', title:'Hosting, cost, getting one', lvl:2 },
+  ]},
+  { group:'Technical', items:[
+    { id:'t-arch', title:'Architecture', lvl:3 },
+    { id:'t-data', title:'Data model: git + Bitcoin', lvl:3 },
+    { id:'t-vm', title:'The kernel and VM', lvl:3 },
+    { id:'t-net', title:'Messages and network', lvl:3 },
+    { id:'t-wallet', title:'Wallet and overlays', lvl:3 },
+    { id:'t-deploy', title:'Genesis and deployment', lvl:3 },
+    { id:'t-status', title:'What is built', lvl:3 },
+  ]},
+];
+const LEVELS = {1:'Overview',2:'In depth',3:'Technical'};
+const pages = {};
+document.querySelectorAll('article[data-page]').forEach(a => pages[a.dataset.page] = a);
+const flat = [];
+TREE.forEach(n => n.group ? n.items.forEach(i => flat.push({...i, group:n.group})) : flat.push(n));
+
+function buildNav(){
+  const nav = document.getElementById('treeNav');
+  const link = i => pages[i.id]
+    ? `<a href="#${i.id}" data-id="${i.id}" ${i.color?`style="--pc:var(--${i.color})"`:''}>${i.color?`<span class="dot" style="background:var(--${i.color})"></span>`:''}${i.title}</a>`
+    : `<span class="todo">${i.title}</span>`;
+  nav.innerHTML = '<ol>' + TREE.map(n => n.group
+    ? `<li class="group"><span class="label">${n.group}</span><ol>${n.items.map(i=>`<li>${link(i)}</li>`).join('')}</ol></li>`
+    : `<li class="home">${link(n)}</li>`).join('') + '</ol>';
+}
+
+function crumbs(p){
+  const d = [1,2,3].map(n => `<i class="${n<=p.lvl?'f':''}"></i>`).join('');
+  const trail = p.home ? '' : `<a href="#overview">Overview</a><span>/</span><span>${p.group}</span><span>/</span><span>${p.title}</span>`;
+  return `<div class="crumbs">${trail}<span class="depth" title="Depth">${d}<b>${LEVELS[p.lvl]}</b></span></div>`;
+}
+
+function show(){
+  let id = (location.hash || '#overview').slice(1);
+  if(!pages[id]) id = 'overview';
+  const p = flat.find(x => x.id === id) || flat[0];
+  Object.values(pages).forEach(a => a.classList.toggle('on', a === pages[id]));
+  const a = pages[id];
+  if(!a.querySelector('.crumbs')) a.insertAdjacentHTML('afterbegin', crumbs(p));
+  document.querySelectorAll('#treeNav a').forEach(l => l.toggleAttribute('aria-current', l.dataset.id === id) && l.setAttribute('aria-current','page'));
+  document.title = p.home ? 'skein.nexus' : `${p.title} · skein.nexus`;
+  document.getElementById('tree').classList.remove('open');
+  document.getElementById('menuBtn').setAttribute('aria-expanded','false');
+  window.scrollTo(0,0);
+}
+
+buildNav();
+window.addEventListener('hashchange', show);
+document.getElementById('menuBtn').addEventListener('click', e => {
+  const t = document.getElementById('tree'); t.classList.toggle('open');
+  e.currentTarget.setAttribute('aria-expanded', t.classList.contains('open'));
+});
+show();
+</script>

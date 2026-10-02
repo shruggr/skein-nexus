@@ -1,0 +1,6 @@
+{
+  "name": "skein-nexus",
+  "compatibility_date": "2026-09-26",
+  "assets": { "directory": "./dist" },
+  "routes": [{ "pattern": "skein.nexus", "custom_domain": true }]
+}

@@ -1,0 +1,1303 @@
+<title>skein.nexus</title>
+<meta name="description" content="A sandbox that holds its own keys, where the only way in or out is a signed message or a provable Bitcoin transaction, and everything that happens is kept as a history you can branch and merge.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="skein.nexus">
+<meta property="og:url" content="https://skein.nexus/">
+<meta property="og:title" content="skein: a computer with its own keys and a complete memory">
+<meta property="og:description" content="A sandbox that holds its own keys, where the only way in or out is a signed message or a provable Bitcoin transaction, and everything that happens is kept as a history you can branch and merge.">
+<meta property="og:image" content="https://skein.nexus/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="skein.nexus: a sandbox with one signed door, guarded by its keys, writing to a graph of history that branches and merges.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="skein: a computer with its own keys and a complete memory">
+<meta name="twitter:description" content="A sandbox that holds its own keys, where the only way in or out is a signed message or a provable Bitcoin transaction, and everything that happens is kept as a history you can branch and merge.">
+<meta name="twitter:image" content="https://skein.nexus/og.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#F2F3EF;
+  --surface:#FAFAF7;
+  --sunk:#E8EAE4;
+  --ink:#17201D;
+  --ink-2:#47514C;
+  --ink-3:#77817C;
+  --rule:#D5D9D2;
+  --sandbox:#3D5A80;
+  --keys:#9C5F0E;
+  --graph:#0E7563;
+  --accent:#0E6B5B;
+  --display:"Familjen Grotesk","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Newsreader",Charter,Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --measure:66ch;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0F1412; --surface:#151C19; --sunk:#1B2420;
+    --ink:#E5EAE7; --ink-2:#A5AFAA; --ink-3:#74807A; --rule:#26302B;
+    --sandbox:#93B1DC; --keys:#E2A64B; --graph:#4DC3A8; --accent:#5FCDB3;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0F1412; --surface:#151C19; --sunk:#1B2420;
+  --ink:#E5EAE7; --ink-2:#A5AFAA; --ink-3:#74807A; --rule:#26302B;
+  --sandbox:#93B1DC; --keys:#E2A64B; --graph:#4DC3A8; --accent:#5FCDB3;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{
+  background:var(--ground);color:var(--ink);
+  font-family:var(--body);font-size:18px;line-height:1.6;
+  padding-inline:clamp(16px,3.5vw,44px);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent);text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.015em;font-weight:600}
+p{margin:0}
+code{font-family:var(--mono);font-size:.82em;background:var(--sunk);padding:.08em .35em;border-radius:3px}
+.label{font-family:var(--mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+
+/* frame */
+.shell{max-width:1180px;margin-inline:auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:clamp(28px,5vw,72px);padding-block:0 80px}
+.top{grid-column:1/-1;display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding-block:24px 8px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:21px;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+.brand span{color:var(--ink-3);font-weight:400}
+.top .say{font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+
+/* the tree */
+.tree{position:sticky;top:calc(env(safe-area-inset-top,0px) + 20px);align-self:start;padding-top:28px;font-family:var(--display);font-size:15px}
+.tree ol{list-style:none;margin:0;padding:0}
+.tree li{position:relative}
+.tree .group{margin-top:22px}
+.tree .group > .label{display:block;margin-bottom:6px}
+.tree ol ol{padding-left:14px;border-left:1px solid var(--rule);margin-left:4px}
+.tree a,.tree .todo{display:block;padding:4px 0 4px 10px;color:var(--ink-2);text-decoration:none;line-height:1.3}
+.tree a:hover{color:var(--ink)}
+.tree a[aria-current="page"]{color:var(--ink);font-weight:600}
+.tree a[aria-current="page"]::before{content:"";position:absolute;left:-15px;top:6px;bottom:6px;width:3px;border-radius:2px;background:var(--pc,var(--accent))}
+.tree .home a[aria-current="page"]::before{left:-6px}
+.tree .todo{color:var(--ink-3);opacity:.7;cursor:default}
+.tree .todo::after{content:" · later";font-family:var(--mono);font-size:10.5px}
+.tree .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:1px}
+.menu-btn{display:none}
+
+/* pages */
+main{min-width:0;padding-top:28px}
+article[data-page]{display:none}
+article[data-page].on{display:block}
+.crumbs{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:22px;font-family:var(--mono);font-size:12px;color:var(--ink-3)}
+.crumbs a{color:var(--ink-3)}
+.depth{display:inline-flex;gap:3px;margin-left:auto;align-items:center}
+.depth i{width:14px;height:5px;border-radius:2px;background:var(--rule);display:block}
+.depth i.f{background:var(--ink-3)}
+.depth b{font-weight:400;margin-left:6px}
+
+.page-h{font-size:clamp(34px,4.6vw,54px);line-height:1.02;letter-spacing:-.03em;max-width:20ch}
+.lede{margin-top:20px;font-size:clamp(19px,1.8vw,22px);line-height:1.5;max-width:52ch;color:var(--ink)}
+.prose{display:grid;gap:18px;max-width:var(--measure)}
+.prose p{color:var(--ink)}
+.prose h2{font-size:clamp(24px,2.6vw,30px);line-height:1.15;margin-top:28px}
+.prose h3{font-size:20px;margin-top:12px}
+.prose ul{margin:0;padding-left:1.2em;display:grid;gap:8px}
+.quiet{color:var(--ink-2)}
+.block{margin-top:clamp(40px,6vw,72px)}
+
+/* home hero */
+.hero{display:grid;gap:clamp(28px,4vw,40px)}
+.hero h1{font-size:clamp(40px,6.2vw,76px);line-height:.98;letter-spacing:-.035em;max-width:14ch;font-weight:700}
+.hero .lede{max-width:46ch}
+.figure{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:clamp(12px,2.5vw,24px);overflow-x:auto}
+.figure svg{display:block;width:100%;min-width:560px;height:auto}
+.figcap{margin-top:10px;font-family:var(--mono);font-size:12px;color:var(--ink-3);max-width:var(--measure)}
+
+/* pillars */
+.pillars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid var(--rule)}
+.pillar{padding:24px 24px 26px 0;display:grid;gap:12px;grid-template-rows:auto auto 1fr auto;align-content:start}
+.pillar + .pillar{padding-left:24px;border-left:1px solid var(--rule)}
+.pillar .sw{width:28px;height:4px;border-radius:2px;background:var(--pc)}
+.pillar h3{font-size:22px;line-height:1.15}
+.pillar h3 small{display:block;font-family:var(--body);font-weight:400;font-style:italic;font-size:16px;color:var(--ink-2);margin-top:4px;letter-spacing:0}
+.pillar p{font-size:16.5px;line-height:1.55;color:var(--ink-2)}
+.pillar .go{font-family:var(--mono);font-size:12.5px;text-decoration:none}
+.pillar .go::after{content:" →"}
+
+.together{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:18px;margin-top:22px}
+.together div{background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;font-size:16px;line-height:1.5;color:var(--ink-2)}
+.together b{display:block;font-family:var(--display);font-weight:600;color:var(--ink);font-size:16px;margin-bottom:4px}
+
+/* uses */
+.uses{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 36px;margin-top:8px}
+.use{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;padding-block:16px;border-top:1px solid var(--rule);text-decoration:none;color:inherit}
+.use .k{grid-row:span 2;font-family:var(--mono);font-size:12px;color:var(--ink-3);padding-top:4px;min-width:5.5em}
+.use h4{font-size:18px;color:var(--ink)}
+.use p{font-size:16px;color:var(--ink-2);line-height:1.5}
+a.use:hover h4{color:var(--accent)}
+
+/* go deeper */
+.deeper{margin-top:clamp(48px,7vw,80px);padding-top:22px;border-top:2px solid var(--ink)}
+.deeper .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:14px}
+.deeper a{display:grid;gap:6px;padding:16px 18px;background:var(--surface);border:1px solid var(--rule);border-radius:10px;text-decoration:none;color:var(--ink)}
+.deeper a:hover{border-color:var(--ink-3)}
+.deeper a b{font-family:var(--display);font-weight:600;font-size:17px}
+.deeper a span{font-size:15px;color:var(--ink-2);line-height:1.45}
+.deeper a em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+
+.status{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:99px;border:1px solid var(--rule);color:var(--ink-3);vertical-align:2px;white-space:nowrap}
+.status.built{color:var(--graph);border-color:color-mix(in srgb,var(--graph) 45%,transparent)}
+.status.wip{color:var(--keys);border-color:color-mix(in srgb,var(--keys) 45%,transparent)}
+
+footer{grid-column:1/-1;border-top:1px solid var(--rule);padding-top:18px;font-family:var(--mono);font-size:12px;color:var(--ink-3);display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .tree{position:static;padding-top:0}
+  .tree nav{display:none}
+  .tree.open nav{display:block;padding-bottom:12px;border-bottom:1px solid var(--rule)}
+  .menu-btn{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12.5px;background:var(--surface);border:1px solid var(--rule);color:var(--ink);border-radius:8px;padding:8px 12px;cursor:pointer}
+  .pillars{grid-template-columns:minmax(0,1fr)}
+  .pillar,.pillar + .pillar{padding:22px 0;border-left:0}
+  .pillar + .pillar{border-top:1px solid var(--rule)}
+  .together{grid-template-columns:minmax(0,1fr)}
+  .uses{grid-template-columns:minmax(0,1fr)}
+}
+
+/* level 2 */
+.cols2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.swap{margin:6px 0 0;border-top:1px solid var(--rule);max-width:var(--measure)}
+.swap > div{display:grid;grid-template-columns:minmax(0,9em) minmax(0,1fr);gap:4px 20px;padding-block:12px;border-bottom:1px solid var(--rule)}
+.swap dt{font-family:var(--display);font-weight:600;font-size:16px;color:var(--ink)}
+.swap dd{margin:0;font-size:16.5px;line-height:1.55;color:var(--ink-2)}
+.swap.head > div:first-child dt,.swap.head > div:first-child dd{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);font-weight:400}
+.note{max-width:var(--measure);background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;font-size:16.5px;line-height:1.55;color:var(--ink-2)}
+.note b{font-family:var(--display);color:var(--ink);font-weight:600}
+.levels{display:grid;gap:0;border-top:1px solid var(--rule);max-width:var(--measure)}
+.levels > div{display:grid;grid-template-columns:minmax(0,8.5em) minmax(0,1fr);gap:4px 20px;padding-block:14px;border-bottom:1px solid var(--rule)}
+.levels h4{font-size:16px}
+.levels p{font-size:16.5px;line-height:1.55;color:var(--ink-2)}
+.fig-inline{background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:clamp(10px,2vw,18px);overflow-x:auto;max-width:760px}
+.fig-inline svg{display:block;width:100%;min-width:520px;height:auto}
+.pagekicker{font-family:var(--mono);font-size:12px;color:var(--pc,var(--ink-3));letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:block}
+@media (max-width:860px){.cols2{grid-template-columns:minmax(0,1fr)}.swap > div,.levels > div{grid-template-columns:minmax(0,1fr)}}
+</style>
+
+<div class="shell">
+  <header class="top">
+    <a class="brand" href="#overview">skein<span>.nexus</span></a>
+    <span class="say">skein is pronounced “skane”</span>
+  </header>
+
+  <aside class="tree" id="tree">
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="treeNav">Pages ▾</button>
+    <nav id="treeNav" aria-label="Pages"></nav>
+  </aside>
+
+  <main id="main">
+
+<!-- ============================================================ OVERVIEW -->
+<article data-page="overview">
+  <div class="hero">
+    <div>
+      <h1>A computer with its own keys and a complete memory.</h1>
+      <p class="lede">A skein is a sandbox that holds its own keys. The only way in or out is a signed message or a transaction you can prove on Bitcoin. Everything that happens inside is kept as a history you can branch and merge, the way you work with a git repository.</p>
+    </div>
+
+    <div>
+      <div class="figure" role="img" aria-label="Diagram: people, programs, other skeins and Bitcoin reach a skein only through one door guarded by its keys. Inside, programs run in a sandbox and write to a graph of history that branches and merges.">
+        <svg viewBox="0 0 880 380" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/>
+            </marker>
+          </defs>
+          <!-- outside world -->
+          <g fill="var(--ink-2)">
+            <text x="20" y="92">people</text>
+            <text x="20" y="152">programs</text>
+            <text x="20" y="212">other skeins</text>
+            <text x="20" y="272">Bitcoin</text>
+          </g>
+          <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#ah)" marker-start="url(#ah)">
+            <path d="M118,88 C170,88 170,188 216,190"/>
+            <path d="M118,148 C160,148 170,190 216,190"/>
+            <path d="M118,208 C160,208 170,190 216,190"/>
+            <path d="M88,268 C170,268 170,192 216,190"/>
+          </g>
+          <!-- skein boundary -->
+          <rect x="232" y="30" width="628" height="320" rx="16" fill="var(--ground)" stroke="var(--ink)" stroke-width="2"/>
+          <text x="252" y="56" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="17" font-weight="600">a skein</text>
+          <!-- door with keys -->
+          <rect x="220" y="150" width="24" height="80" rx="5" fill="var(--keys)"/>
+          <g transform="translate(262,172)">
+            <circle cx="9" cy="9" r="7" fill="none" stroke="var(--keys)" stroke-width="2.4"/>
+            <path d="M16,9 H40 M32,9 V16 M38,9 V14" stroke="var(--keys)" stroke-width="2.4" fill="none"/>
+          </g>
+          <text x="262" y="210" fill="var(--keys)" font-size="11.5">identity + wallet keys</text>
+          <text x="262" y="226" fill="var(--ink-3)" font-size="11">sign out · verify in</text>
+          <!-- sandbox -->
+          <rect x="420" y="62" width="160" height="256" rx="10" fill="none" stroke="var(--sandbox)" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <text x="434" y="86" fill="var(--sandbox)" font-size="12">sandbox</text>
+          <g font-size="12" fill="var(--ink)">
+            <rect x="436" y="104" width="128" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+            <text x="448" y="123">shell · git</text>
+            <rect x="436" y="144" width="128" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+            <text x="448" y="163">JS · Python</text>
+            <rect x="436" y="184" width="128" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+            <text x="448" y="203">a model's turns</text>
+            <rect x="436" y="224" width="128" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+            <text x="448" y="243">your program</text>
+          </g>
+          <text x="434" y="290" fill="var(--ink-3)" font-size="11">no disk, network or</text>
+          <text x="434" y="305" fill="var(--ink-3)" font-size="11">clock of its own</text>
+          <!-- door to sandbox -->
+          <path d="M246,190 H414" stroke="var(--keys)" stroke-width="1.6" fill="none" marker-end="url(#ah)" stroke-dasharray="0" opacity=".9"/>
+          <!-- sandbox to graph -->
+          <path d="M584,190 H616" stroke="var(--graph)" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+          <!-- graph -->
+          <text x="626" y="86" fill="var(--graph)" font-size="12">graph of history</text>
+          <g stroke="var(--graph)" stroke-width="2" fill="none">
+            <path d="M650,300 V120"/>
+            <path d="M650,270 C650,250 705,255 705,235 V205 C705,185 650,185 650,165"/>
+            <path d="M650,200 C650,180 790,190 790,165 V130"/>
+          </g>
+          <g fill="var(--graph)">
+            <circle cx="650" cy="300" r="6"/><circle cx="650" cy="270" r="6"/><circle cx="650" cy="235" r="6"/>
+            <circle cx="650" cy="200" r="6"/><circle cx="650" cy="165" r="6"/>
+            <circle cx="705" cy="235" r="6"/><circle cx="705" cy="205" r="6"/>
+            <circle cx="790" cy="165" r="6"/>
+          </g>
+          <g fill="var(--ground)" stroke="var(--graph)" stroke-width="2">
+            <circle cx="650" cy="120" r="9"/><circle cx="790" cy="130" r="9"/>
+          </g>
+          <g font-size="11" fill="var(--ink-2)">
+            <text x="664" y="124">head</text>
+            <text x="716" y="224">branch</text>
+            <text x="716" y="238">and merge</text>
+            <text x="752" y="112">another head</text>
+            <text x="664" y="304">genesis</text>
+          </g>
+        </svg>
+      </div>
+      <p class="figcap">One door, guarded by the skein’s keys. Programs inside write to a graph that never overwrites anything.</p>
+    </div>
+  </div>
+
+  <section class="block">
+    <p class="label" style="margin-bottom:14px">What it is: three parts</p>
+    <div class="pillars">
+      <div class="pillar" style="--pc:var(--sandbox)">
+        <span class="sw"></span>
+        <h3>The sandbox<small>Programs run with no side doors.</small></h3>
+        <p>A skein runs ordinary programs compiled to WebAssembly: a shell, git, JavaScript, Python, or a model deciding what to do next. They get no hidden disk, network or clock. Every step is metered, and any step can be run again with exactly the same result.</p>
+        <a class="go" href="#sandbox">The sandbox</a>
+      </div>
+      <div class="pillar" style="--pc:var(--keys)">
+        <span class="sw"></span>
+        <h3>Keys and the door<small>It has an identity and a wallet.</small></h3>
+        <p>Each skein has its own identity keys and its own Bitcoin wallet. Messages come in signed by their sender, Bitcoin data comes with its proof, and anything the skein asks the outside world for comes back signed by the host that fetched it. You always know who sent what and what was paid.</p>
+        <a class="go" href="#keys">Keys and the door</a>
+      </div>
+      <div class="pillar" style="--pc:var(--graph)">
+        <span class="sw"></span>
+        <h3>The graph<small>Nothing is overwritten.</small></h3>
+        <p>Every file, message, transaction and step is stored as a record addressed by its hash, so it can’t change once it’s written. Git repositories and Bitcoin proofs sit in the same graph. You can pick any point as a head, branch from it and merge back.</p>
+        <a class="go" href="#graph">The graph</a>
+      </div>
+    </div>
+
+    <div class="together">
+      <div><b>One door means a complete record.</b>If something reached the skein, it came through the door, so it’s in the graph along with who sent it.</div>
+      <div><b>A complete record means replay.</b>The sandbox has no hidden inputs, so running a step again from the record gives the same bytes.</div>
+      <div><b>Replay means branching is cheap.</b>Any point in the history is a full state. Start from it, try something else, and merge back what works.</div>
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="label" style="margin-bottom:6px">What you can do with it</p>
+    <div class="uses">
+      <a class="use" href="#inference"><span class="k">agents</span><h4>Watch a model work, turn by turn</h4><p>Each inference request and each tool call is a change to the graph. You can read back, replay or branch from any turn, and an agent can look across every conversation, not just its own log.</p></a>
+      <a class="use" href="#identity"><span class="k">identity</span><h4>Give every agent, and every person, a skein</h4><p>Its own handle, keys, wallet and mailbox. Other people and programs talk to it by public key.</p></a>
+      <a class="use" href="#network"><span class="k">network</span><h4>Let skeins work with each other in the open</h4><p>Skeins message and pay each other the same way you message them, and every exchange is signed and kept.</p></a>
+      <a class="use" href="#yourwork"><span class="k">your work</span><h4>One graph over all your work</h4><p>Repositories, machines and agent providers, in one history you can search and trace, whether a person or a program did the work.</p></a>
+      <a class="use" href="#bitcoin"><span class="k">bitcoin</span><h4>Your own slice of Bitcoin, indexed and proven</h4><p>Coins, transactions, proofs, headers and overlay data kept by you, for you, instead of by a shared indexer.</p></a>
+      <a class="use" href="#anywhere"><span class="k">deploy</span><h4>Start from a commit, run anywhere</h4><p>A skein boots from a git tree, even one published on chain, and runs the same on a server, a laptop or in a browser tab.</p></a>
+    </div>
+  </section>
+
+  <p class="quiet block" style="font-size:16px;max-width:var(--measure)">Skein is open source and being built now. Pages mark each part as <span class="status built">built</span>, <span class="status wip">in progress</span> or <span class="status">designed</span>. The code is at <a href="https://github.com/shruggr/skein">github.com/shruggr/skein</a>.</p>
+</article>
+
+
+<!-- ============================================================ SANDBOX -->
+<article data-page="sandbox" style="--pc:var(--sandbox)">
+  <span class="pagekicker">What it is · 1 of 3</span>
+  <h1 class="page-h">The sandbox: a computer with no side doors</h1>
+  <p class="lede">A skein runs programs the way any computer does. What’s different is what the programs don’t get: no disk, network, clock or randomness of their own. Everything a program can read comes from the skein’s history, so anything it does can be run again and checked.</p>
+
+  <div class="prose block">
+    <h2>What runs inside</h2>
+    <p>Programs are ordinary WebAssembly compiled against the standard WASI interface, so they’re written for WASI, not for skein. Anything that compiles to plain WASI can run: Rust, C, Zig, Go. <span class="status built">built</span></p>
+    <p>Each skein comes with a working userland:</p>
+    <ul>
+      <li>a bash-compatible shell with coreutils, <code>grep</code>, <code>sed</code>, <code>awk</code>, <code>find</code>, <code>diff</code> and <code>jq</code>;</li>
+      <li>real <code>git</code> (2.55): commit, branch, merge, log, diff;</li>
+      <li>JavaScript (QuickJS, with a small Node shim) and Python 3.14;</li>
+      <li>the conversation loop that drives a language model, when there is one.</li>
+    </ul>
+  </div>
+
+  <div class="block" style="max-width:var(--measure)">
+    <h2 style="font-size:clamp(24px,2.6vw,30px);margin-bottom:12px">What’s missing, and what takes its place</h2>
+    <dl class="swap head">
+      <div><dt>A normal program has</dt><dd>A skein program gets instead</dd></div>
+      <div><dt>A disk</dt><dd>Files and folders from the graph. A working directory is a git tree, named by its hash.</dd></div>
+      <div><dt>The network</dt><dd>Nothing direct. To reach outside it sends a message or makes a request, and the request and its answer are written into the history.</dd></div>
+      <div><dt>A clock</dt><dd>The time the current input arrived, plus the work done since (1 unit of work = 1 clock tick). Time never runs backwards and replays exactly.</dd></div>
+      <div><dt>Randomness</dt><dd>A stream derived from the hash of the current input. It’s repeatable, so it’s never used for secrets. Secrets are made outside, where the keys are.</dd></div>
+      <div><dt>Other processes</dt><dd>Only what it launches itself, inside the same sandbox, on the same meter.</dd></div>
+    </dl>
+  </div>
+
+  <div class="prose block">
+    <h2>Every step is metered</h2>
+    <p>The sandbox counts the instructions every step executes (its “fuel”) and writes the count into the history. There’s a limit per step. Billing is then just a question you ask of the history, and anyone who replays it gets the same numbers. <span class="status built">built</span></p>
+
+    <h2>Any step can be run again</h2>
+    <p>A step’s inputs are all in the history: the message that woke it, the files it saw, the answers to anything it asked for. Run it again and you get the same bytes out. So you check what a program did by re-running it, not by trusting a log that someone wrote about it.</p>
+    <p class="quiet">This is tested, not claimed: the test suite replays every stored history into a fresh store, twice, natively and in headless Chrome, and requires identical results. <span class="status built">built</span></p>
+
+    <h2>Where the sandbox runs</h2>
+    <p>The kernel is written in Zig and runs on a server over wasmtime. The same kernel compiles to run in a browser tab, keeping its graph in the browser. A history written in the browser replays on the server, and the other way round. <span class="status built">built</span></p>
+
+    <div class="note"><b>Honest limits today.</b> No package managers (npm, pip), no threads, no streaming pipes (each pipeline stage runs to completion), and no tar or gzip yet. Programs that need a native binary or an outside service reach it by message, as a separate party.</div>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#keys"><em>What it is</em><b>Keys and the door</b><span>How anything gets in or out of the sandbox.</span></a>
+      <a href="#graph"><em>What it is</em><b>The graph</b><span>Where the steps and their results are kept.</span></a>
+      <a href="#t-vm"><em>Technical</em><b>The kernel and VM</b><span>Syscalls, fuel, the clock, replay, the browser build.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ KEYS -->
+<article data-page="keys" style="--pc:var(--keys)">
+  <span class="pagekicker">What it is · 2 of 3</span>
+  <h1 class="page-h">Keys and the door</h1>
+  <p class="lede">A skein is an identity. It has its own key pair, its own Bitcoin wallet, and one way to deal with the world: through a door where everything that crosses is signed or proven.</p>
+
+  <div class="prose block">
+    <h2>An identity of its own</h2>
+    <p>Every skein has an identity key. People, programs and other skeins address it by that public key, and it authenticates them the same way: by key, never by name or account. A handle like <code>@martha</code> is only a way of finding the key. <span class="status built">built</span></p>
+
+    <h2>Keys never enter the sandbox</h2>
+    <p>Programs can ask for a signature, but they can never read a key. Signing is a request to a separate signer outside the sandbox, which sees a reference to a key and a 32-byte hash and nothing else. Each request and the signature that came back are written into the history, and signatures are deterministic, so replay matches exactly. <span class="status built">built</span></p>
+    <p class="quiet">Where the keys actually live is up to whoever runs the skein: a hosting service’s key store, a hardware device, or your own wallet in a browser tab. The skein only ever sees public keys and the signatures it asked for.</p>
+
+    <h2>A wallet inside</h2>
+    <p>The wallet (the BRC-100 interface) runs inside the sandbox as a program. Its coins, transactions, proofs and block headers are records in the graph like everything else. It builds and signs transactions (through the signer) and checks incoming payments against their proofs before it accepts them. <span class="status built">built</span></p>
+  </div>
+
+  <div class="block" style="max-width:var(--measure)">
+    <h2 style="font-size:clamp(24px,2.6vw,30px);margin-bottom:6px">The door: what crosses, and how it’s proven</h2>
+    <p class="quiet" style="margin-bottom:14px">Every skein is a small web server at its own address. Each request goes through one program, the front door, which runs mutual authentication (BRC-103/104) and decides what gets written.</p>
+    <dl class="swap head">
+      <div><dt>What crosses</dt><dd>How you can check it later</dd></div>
+      <div><dt>A message</dt><dd>Signed by its sender. The signed request is kept with the message, so who sent it can be verified from the record alone, years later.</dd></div>
+      <div><dt>A payment</dt><dd>A transaction with its ancestry and Merkle proofs (BEEF), checked against block headers when it arrives.</dd></div>
+      <div><dt>Block headers and proofs</dt><dd>Prove themselves: each header must chain back to Bitcoin’s genesis with valid proof of work, and each proof must hash up to a header.</dd></div>
+      <div><dt>A peer-to-peer message</dt><dd>Signed by its publisher (libp2p), and re-verifiable from the record.</dd></div>
+      <div><dt>Something the skein asked for</dt><dd>A web request goes out through a proxy the host provides, which signs the request and the answer it got. Both are written on the step that made them, so the step replays. <span class="status">designed</span></dd></div>
+    </dl>
+  </div>
+
+  <div class="prose block">
+    <h2>Only state gets written</h2>
+    <p>Reads, polls and handshakes leave no trace. A message that arrives is one record; checking your inbox ten thousand times writes nothing (that’s a test). A record is written only when the state actually changes. <span class="status built">built</span></p>
+
+    <h2>Why this matters</h2>
+    <ul>
+      <li>Every record has an author you can check.</li>
+      <li>Payments are proven, not claimed.</li>
+      <li>A skein can hold money and do things with it, and you can see exactly what it signed and why.</li>
+    </ul>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#graph"><em>What it is</em><b>The graph</b><span>What happens to everything that comes through the door.</span></a>
+      <a href="#identity"><em>What you can do</em><b>A skein per agent</b><span>Handles, mailboxes and wallets in practice.</span></a>
+      <a href="#t-net"><em>Technical</em><b>Messages and network</b><span>The front door, sessions, routes, mailboxes, libp2p.</span></a>
+      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>The signer, SPV, settlement, overlay nodes.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ GRAPH -->
+<article data-page="graph" style="--pc:var(--graph)">
+  <span class="pagekicker">What it is · 3 of 3</span>
+  <h1 class="page-h">The graph: history you can branch</h1>
+  <p class="lede">Everything a skein holds is one graph of records, each named by the hash of its contents. Nothing is edited in place. A change is a new record that points at the one before it.</p>
+
+  <div class="prose block">
+    <h2>Named by content</h2>
+    <p>A record’s name is a fingerprint of what’s in it. The same content always gets the same name and is stored once. Change one byte and it has a new name. Git works this way, and so does Bitcoin: a transaction’s ID is the hash of the transaction.</p>
+    <p>That’s why the graph can hold both. A folder’s name in the graph <em>is</em> its git tree ID, so a repository is already part of the graph. A transaction’s name <em>is</em> its txid, and a block header’s is its block hash. <span class="status built">built</span></p>
+
+    <h2>What’s in it</h2>
+    <ul>
+      <li><b>Files and folders</b>, as git objects.</li>
+      <li><b>Messages</b> that came through the door, with their signatures.</li>
+      <li><b>Steps</b> programs took, with the work they cost and the answers to anything they asked for.</li>
+      <li><b>Bitcoin records</b>: transactions, block headers and the Merkle proof nodes between them.</li>
+      <li><b>Links between them</b>: which step started which, which transaction spends which output. You can ask “what spent this coin?” or “what did this message lead to?”.</li>
+    </ul>
+    <p>One small record at the top points at all of it, so the whole state of a skein has a single hash. Two skeins that took in the same inputs have the same hash. <span class="status built">built</span></p>
+  </div>
+
+  <div class="prose block">
+    <h2>Searchable by how things connect</h2>
+    <p>Because every record links to what it came from, the graph can be searched by those links, not just by text. From a message you can find the conversation it belongs to, the steps it set off, the files those steps changed and the payments they made. From a coin you can find what spent it and why.</p>
+    <p>That changes what an agent working in a skein can see. It isn’t limited to its current chat log. It can see every conversation the skein has had, how each connects to the others, and the work and money that came out of them: the whole graph, not a transcript. Programs in the skein can follow these links today. <span class="status built">built</span> Handing the same view to a model as a tool is next. <span class="status">not yet</span></p>
+  </div>
+
+  <div class="block">
+    <div class="fig-inline" role="img" aria-label="Diagram: a chain of records, each pointing at the one before. A head named main points at the latest; an earlier record also has a second chain branching from it, whose head is named experiment.">
+      <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12">
+        <defs>
+          <marker id="ga" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker>
+        </defs>
+        <g fill="var(--surface)" stroke="var(--graph)" stroke-width="1.6">
+          <rect x="20" y="120" width="96" height="44" rx="6"/>
+          <rect x="160" y="120" width="96" height="44" rx="6"/>
+          <rect x="300" y="120" width="96" height="44" rx="6"/>
+          <rect x="440" y="120" width="96" height="44" rx="6"/>
+          <rect x="580" y="120" width="96" height="44" rx="6"/>
+          <rect x="440" y="36" width="96" height="44" rx="6"/>
+          <rect x="580" y="36" width="96" height="44" rx="6"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="32" y="140">origin</text><text x="32" y="156" fill="var(--ink-3)">bafy…3k</text>
+          <text x="172" y="140">update 1</text><text x="172" y="156" fill="var(--ink-3)">bafy…q7</text>
+          <text x="312" y="140">update 2</text><text x="312" y="156" fill="var(--ink-3)">bafy…m2</text>
+          <text x="452" y="140">update 3</text><text x="452" y="156" fill="var(--ink-3)">bafy…x9</text>
+          <text x="592" y="140">update 4</text><text x="592" y="156" fill="var(--ink-3)">bafy…d4</text>
+          <text x="452" y="56">try A</text><text x="452" y="72" fill="var(--ink-3)">bafy…u1</text>
+          <text x="592" y="56">try B</text><text x="592" y="72" fill="var(--ink-3)">bafy…h8</text>
+        </g>
+        <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#ga)">
+          <path d="M160,142 H118"/><path d="M300,142 H258"/><path d="M440,142 H398"/><path d="M580,142 H538"/>
+          <path d="M440,58 C400,58 370,80 360,118"/><path d="M580,58 H538"/>
+        </g>
+        <g font-size="11.5">
+          <path d="M628,196 V168" stroke="var(--graph)" stroke-width="2" marker-end="url(#ga)"/>
+          <text x="596" y="212" fill="var(--graph)">head: main</text>
+          <path d="M628,16 V32" stroke="var(--keys)" stroke-width="2" marker-end="url(#ga)"/>
+          <text x="480" y="16" fill="var(--keys)">head: experiment</text>
+          <text x="20" y="200" fill="var(--ink-3)">each record points back at the one before · names are hashes</text>
+        </g>
+      </svg>
+    </div>
+    <p class="figcap">Records only ever point backwards. A head is a named pointer to one of them; branching is making another.</p>
+  </div>
+
+  <div class="prose block">
+    <h2>Heads, branches and merges</h2>
+    <p>Things that change over time (a conversation, a running task, a project’s files) are chains: a first record and a series of updates, each pointing at the one before. A pointer to the first record means “as it is now”; a pointer to an update means “exactly this version”.</p>
+    <p>A <b>head</b> is a named pointer into the history, like a git branch. It moves only when something deliberately moves it. Because old records never change, any earlier point is still there to start from.</p>
+  </div>
+
+  <div class="block" style="max-width:var(--measure)">
+    <p class="label" style="margin-bottom:8px">Where branching works today</p>
+    <div class="levels">
+      <div><h4>Files</h4><p>Named heads point at file trees, and real git runs inside: branch, three-way merge, conflicts. <span class="status built">built</span></p></div>
+      <div><h4>Conversations</h4><p>Each turn names its parent turn, so a fork is simply a new turn that names an earlier parent. The records support it; there’s no button for it yet. <span class="status built">records built</span></p></div>
+      <div><h4>A whole skein</h4><p>Its state is one hash, so a checkpoint can be packed up and restored on another host. <span class="status built">built</span> Starting a new skein from another’s earlier point, or merging two skeins, isn’t designed yet. <span class="status">not yet</span></p></div>
+    </div>
+  </div>
+
+  <div class="prose block">
+    <h2>Why this matters</h2>
+    <ul>
+      <li>Auditing is reading, not reconstructing: the history is the state.</li>
+      <li>Two states compare by one hash, and syncing means copying the records the other side is missing.</li>
+      <li>Trying something risky is cheap: branch, try it, keep what works.</li>
+    </ul>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#inference"><em>What you can do</em><b>Traceable inference</b><span>A model’s turns as records you can branch from.</span></a>
+      <a href="#bitcoin"><em>What you can do</em><b>Your slice of Bitcoin</b><span>Transactions, proofs and headers in the same graph.</span></a>
+      <a href="#t-data"><em>Technical</em><b>Data model: git + Bitcoin</b><span>CIDs, codecs, Merkle search trees, the state record.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ INFERENCE -->
+<article data-page="inference">
+  <span class="pagekicker">What you can do</span>
+  <h1 class="page-h">Watch a model work, turn by turn</h1>
+  <p class="lede">When a skein talks to a language model, every request, every answer and every tool the model uses becomes a record in the graph. You can read back any turn, re-run what the tools did, and start again from any earlier point.</p>
+
+  <div class="prose block">
+    <h2>The model is outside the sandbox</h2>
+    <p>Inference isn’t part of skein. A model provider is another party with its own identity, reached by message like anyone else. The conversation loop inside the skein sends a request; the answer comes back through the door as a signed message and wakes the loop up. <span class="status built">built</span></p>
+    <p>The model and how hard it thinks are chosen per request. Any OpenAI-compatible provider works behind the inference peer, and a skein with no model at all is just as useful.</p>
+
+    <h2>What gets kept, each turn</h2>
+    <ul>
+      <li>The <b>prompt</b>: the system prompt from the skein’s own files, and the user’s message.</li>
+      <li>The <b>answer</b>: the text, the model’s reasoning, the tool calls it made, which model answered, how long it took and the tokens it used.</li>
+      <li>Each <b>tool call</b> as its own step in the sandbox. A shell command runs there, and the folder it leaves behind is a tree with its own hash.</li>
+      <li>The <b>signed reply</b> from the inference provider, and the work each step cost.</li>
+    </ul>
+    <p>Only new turns are sent to the provider. Each turn is a record with a hash, and the provider keeps the ones it has seen, so a long conversation doesn’t get re-sent in full every time. <span class="status built">built</span></p>
+  </div>
+
+  <div class="block">
+    <div class="fig-inline" role="img" aria-label="Diagram: a conversation as a chain of turns (system, user, assistant, tool, assistant). A second user turn branches from the first assistant turn, forming a fork.">
+      <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12">
+        <defs><marker id="ia" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>
+        <g fill="var(--surface)" stroke-width="1.6">
+          <rect x="16" y="110" width="100" height="40" rx="6" stroke="var(--rule)"/>
+          <rect x="146" y="110" width="100" height="40" rx="6" stroke="var(--rule)"/>
+          <rect x="276" y="110" width="110" height="40" rx="6" stroke="var(--graph)"/>
+          <rect x="416" y="110" width="130" height="40" rx="6" stroke="var(--sandbox)"/>
+          <rect x="576" y="110" width="120" height="40" rx="6" stroke="var(--graph)"/>
+          <rect x="416" y="30" width="130" height="40" rx="6" stroke="var(--keys)"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="30" y="135">system</text>
+          <text x="160" y="135">user</text>
+          <text x="290" y="135">assistant</text>
+          <text x="430" y="135">tool: bash</text>
+          <text x="590" y="135">assistant</text>
+          <text x="430" y="55">user (retry)</text>
+        </g>
+        <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#ia)">
+          <path d="M146,130 H118"/><path d="M276,130 H248"/><path d="M416,130 H388"/><path d="M576,130 H548"/>
+          <path d="M416,50 C370,50 345,70 335,108"/>
+        </g>
+        <g font-size="11" fill="var(--ink-3)">
+          <text x="290" y="170">reasoning, tool calls,</text>
+          <text x="290" y="184">model, time, tokens</text>
+          <text x="430" y="170">runs in the sandbox;</text>
+          <text x="430" y="184">files → a tree hash</text>
+          <text x="556" y="55" fill="var(--keys)">a fork: a new turn</text>
+          <text x="556" y="69" fill="var(--keys)">naming an earlier parent</text>
+        </g>
+      </svg>
+    </div>
+    <p class="figcap">Each turn names its parent. Following the parents back gives the whole conversation; naming an earlier parent starts a branch.</p>
+  </div>
+
+  <div class="prose block">
+    <h2>What that lets you do</h2>
+    <ul>
+      <li><b>Read back</b> exactly what the model was shown and what it said, including its reasoning.</li>
+      <li><b>See the files</b> the model saw and changed at every step, because each is a tree with a hash.</li>
+      <li><b>Re-run</b> any tool step from the record and get the same result.</li>
+      <li><b>Look across conversations</b>, not just this one. Every chat the skein has had is in the same graph, linked to the steps, files and messages it produced, so the agent’s context can be the whole graph rather than one log. Programs can walk it today; a tool that gives the model that view is not built yet.</li>
+      <li><b>Branch</b> from any turn and try a different prompt or model, leaving the original intact. The records support this now; the interface for it doesn’t exist yet.</li>
+    </ul>
+    <div class="note"><b>What the record can’t do</b> is make the model deterministic. Re-running a tool step reproduces it exactly; asking the model again may give a different answer. That’s why the model’s answer is kept as a signed message rather than recomputed.</div>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#graph"><em>What it is</em><b>The graph</b><span>Heads, branches and what “fork” means here.</span></a>
+      <a href="#t-net"><em>Technical</em><b>Messages and network</b><span>The inference protocol: context deltas, missing nodes.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ IDENTITY -->
+<article data-page="identity">
+  <span class="pagekicker">What you can do</span>
+  <h1 class="page-h">Give every agent, and every person, a skein</h1>
+  <p class="lede">One skein per agent means each agent has its own keys, wallet, mailbox, files and history. People can have one too, even if all it does is hold their mail.</p>
+
+  <div class="prose block">
+    <h2>An agent’s skein</h2>
+    <p>An agent is a skein whose conversation loop is wired to a model. Its personality and instructions are ordinary files in its tree (<code>SOUL.md</code>, <code>IDENTITY.md</code>, a <code>skills/</code> folder), deployed into it by message. It has a handle, an address, a wallet and a mailbox. Anyone who knows its key can message it; whether it answers depends on what it has subscribed to. <span class="status built">built</span></p>
+
+    <h2>A person’s skein</h2>
+    <p>A person doesn’t need a full agent. A <b>mailbox skein</b> has only the front door and a mailbox, and holds that person’s mail so agents always have somewhere to deliver. There’s no central mail server: every mailbox is its own skein. Registering one is a signed request from your wallet. <span class="status built">built</span></p>
+
+    <h2>Finding each other</h2>
+    <p>Messages go to keys. Handles (<code>@martha</code>) are how you find a key and its address, through the BRC-169 discovery lookup. Each skein keeps its own address book of keys it knows how to reach. <span class="status built">built</span></p>
+  </div>
+
+  <div class="block" style="max-width:var(--measure)">
+    <p class="label" style="margin-bottom:8px">Running today</p>
+    <div class="levels">
+      <div><h4>Two agents</h4><p>Martha and Kurt, two bopen.ai personalities, each in their own skein. They chat with people and consult each other, and each keeps its own side of the conversation.</p></div>
+      <div><h4>A chat front end</h4><p>A web app where you sign in by connecting your wallet. Registering creates your mailbox skein; chats go straight to each agent’s own address.</p></div>
+      <div><h4>Run it locally</h4><p>The same front end can host a skein in the browser tab itself, on the browser build of the kernel, with your wallet as its signer.</p></div>
+    </div>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#network"><em>What you can do</em><b>Skeins together</b><span>Agents messaging, and later paying, each other.</span></a>
+      <a href="#keys"><em>What it is</em><b>Keys and the door</b><span>Where an agent’s keys live and what it can sign.</span></a>
+      <a href="#t-net"><em>Technical</em><b>Messages and network</b><span>Mailboxes, the address book, discovery.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ NETWORK -->
+<article data-page="network">
+  <span class="pagekicker">What you can do</span>
+  <h1 class="page-h">Let skeins work with each other, in the open</h1>
+  <p class="lede">Skeins message each other exactly the way you message them. There’s no separate channel for machines, so everything between them is signed and kept, on both sides.</p>
+
+  <div class="prose block">
+    <h2>One way of talking</h2>
+    <p>An agent asks another agent something with the same kind of message a person would send. The reply comes back to the thread that asked, and only if it comes from the key the question went to. Each side keeps its own record of the exchange. <span class="status built">built</span></p>
+    <p class="quiet">Tested: a person asks Martha, Martha consults Kurt over several back-and-forth hops, and the answer comes back to the person.</p>
+
+    <h2>Broadcast, too</h2>
+    <p>Skeins can also join peer-to-peer networks (libp2p). A message accepted from a topic is written as a record that re-verifies from its publisher’s signature; a duplicate or rejected one writes nothing. <span class="status built">built</span></p>
+
+    <h2>Shared Bitcoin services</h2>
+    <p>A skein can act as an overlay node: it accepts transactions for a topic, keeps the ones its rules admit, and answers lookups about them, using the standard BSV client libraries. If no topic admits a transaction, nothing is stored. <span class="status built">built</span> One application is being built on this now: an automated market maker, where validators run as skeins.</p>
+
+    <h2>Paying each other</h2>
+    <p>The plan is that tolls and quotes ride on the messages, and each program sets its own spending policy. A skein that has money could pay another for work, or pay to start a new one. <span class="status">designed</span></p>
+
+    <div class="note"><b>Why the record matters here most.</b> Programs that can message and pay each other are powerful, and it’s reasonable to be uneasy about that. Skein’s answer isn’t to forbid it but to make it inspectable: every message between them is signed, every step is kept, and any step can be re-run.</div>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#bitcoin"><em>What you can do</em><b>Your slice of Bitcoin</b><span>Wallets, proofs and overlays.</span></a>
+      <a href="#t-net"><em>Technical</em><b>Messages and network</b><span>BRC-33 mailboxes, 103/104 sessions, libp2p.</span></a>
+      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>Topic managers and lookup services on hashes.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ YOUR WORK -->
+<article data-page="yourwork">
+  <span class="pagekicker">What you can do</span>
+  <h1 class="page-h">One graph over all your work</h1>
+  <p class="lede">Skein started with a plain problem. One project lives in several repositories on several machines, and every coding assistant keeps its own history and memory. None of it connects. A skein is one place where all of it can live together, whoever did the work.</p>
+
+  <div class="prose block">
+    <h2>Why it fits</h2>
+    <ul>
+      <li>Repositories are already part of the graph, because folders are stored as git trees. Importing a directory gives you its tree hash, and real git runs inside. <span class="status built">built</span></li>
+      <li>Every change arrives by a signed message or is made by a recorded step, so the history says who or what made it: you, a script, or an agent.</li>
+      <li>Named heads track where each line of work is, and nothing earlier is ever lost.</li>
+      <li>The same record serves a person reading back what happened and a program looking for context.</li>
+    </ul>
+
+    <h2>No AI required</h2>
+    <p>Many skeins won’t run a model at all. A skein that just keeps files, runs scheduled jobs, holds a wallet or indexes some data is a complete skein. The model is one kind of driver among several.</p>
+
+    <div class="note"><b>Where this stands.</b> The pieces exist: importing trees, git inside, heads, signed changes. The everyday workflow (keeping your working repositories and your assistants’ sessions flowing into your skein) is the direction, not a finished tool.</div>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#graph"><em>What it is</em><b>The graph</b><span>How files, heads and history are kept.</span></a>
+      <a href="#anywhere"><em>What you can do</em><b>Start from a commit</b><span>Booting a skein from a git tree.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ BITCOIN -->
+<article data-page="bitcoin">
+  <span class="pagekicker">What you can do</span>
+  <h1 class="page-h">Your own slice of Bitcoin, indexed and proven</h1>
+  <p class="lede">Today, shared indexers and gateways answer questions about your coins and transactions for free. A skein keeps that information for you, in your own graph, with the proofs attached.</p>
+
+  <div class="prose block">
+    <h2>What it holds</h2>
+    <p>Transactions under their txids, block headers under their block hashes, and only the Merkle proof nodes that connect your transactions to those headers. Proofs merge for free: two proofs from the same block share their nodes, because the nodes are named by their hashes. <span class="status built">built</span></p>
+    <p>Headers must chain back to Bitcoin’s genesis block with valid proof of work before they’re accepted. Payments are checked against them when they arrive. Consensus rules are current, including Chronicle.</p>
+
+    <h2>Settlement you can read</h2>
+    <p>Every transaction is <i>unproven</i>, <i>proven</i> or <i>rejected</i>, and that status is worked out from the graph rather than stored as a flag. If a transaction is rejected, everything that spent from it is affected too, by following the “spends” links. A chain reorganisation reverts the proofs it invalidates. <span class="status built">built</span></p>
+
+    <h2>Walk it</h2>
+    <p>Each skein has an explorer that walks the graph: from a block header to its Merkle root, down the proof to a transaction, and on to whatever spends it.</p>
+
+    <h2>Why keep your own</h2>
+    <p>Your records don’t depend on a service staying up or staying honest. The proofs travel with the data. The cost of indexing is paid by whoever wants the index, which is how the overlay ecosystem can pay for itself.</p>
+    <p class="quiet">Not built yet: catching up on headers after a gap, and fetching proofs on demand. Feeds deliver headers and transaction status as they happen.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#network"><em>What you can do</em><b>Skeins together</b><span>Overlay nodes and shared services.</span></a>
+      <a href="#t-data"><em>Technical</em><b>Data model: git + Bitcoin</b><span>How transactions point to proof nodes point to headers.</span></a>
+      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>SPV, settlement, topic managers.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ ANYWHERE -->
+<article data-page="anywhere">
+  <span class="pagekicker">What you can do</span>
+  <h1 class="page-h">Start from a commit, run anywhere</h1>
+  <p class="lede">A skein boots from a tree of files: its programs, its configuration and its own documents. That tree can come from a folder, a git tree, or a repository published on chain. After that, the same skein can run on a server or in a browser tab.</p>
+
+  <div class="prose block">
+    <h2>The system tree</h2>
+    <p>Programs live in <code>bin/</code> as WebAssembly, and configuration lives in <code>etc/</code>: who may send what to which program, which web routes exist, and which Bitcoin feeds to follow. Anything else in the tree is the skein’s own files. The skein’s first record (its genesis) names that tree by hash, so what it started from is fixed forever. <span class="status built">built</span></p>
+
+    <h2>Where the tree comes from</h2>
+    <ul>
+      <li>A folder on disk, hashed into git objects. It gets the same hash as <code>git write-tree</code>.</li>
+      <li>A tree already in a store, by its hash.</li>
+      <li>A <b>chain packet</b>: Bitcoin transactions carrying a repository (via gib), plus their proofs, verified offline. A repository published on chain and a clone of it produce the same store. <span class="status built">reading built</span></li>
+    </ul>
+    <p>When the code comes from the chain, who published it and which version ran are both part of the record. You get code signing without doing anything extra.</p>
+
+    <h2>Same skein, different machines</h2>
+    <p>The kernel runs natively on a server and also compiles for the browser. A history written in either replays in the other. A checkpoint (a skein’s state, packed with everything it references) can be restored on a second host under the same identity. <span class="status built">built</span></p>
+
+    <div class="note"><b>Not yet.</b> There’s no single command that takes a git commit ID; you give it the commit’s tree. Publishing a skein or checkpoint on chain is designed, not built. The browser build runs one kind of module and has no peer-to-peer yet.</div>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#running"><em>Running one</em><b>Hosting, cost, getting one</b><span>What it takes to keep a skein running.</span></a>
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>System trees, packets, checkpoints, re-genesis.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ RUNNING -->
+<article data-page="running">
+  <span class="pagekicker">Running one</span>
+  <h1 class="page-h">Hosting, cost, and getting one</h1>
+  <p class="lede">A skein needs a host to keep it reachable, and it costs something to run. The plan is that each skein pays its own way from its own wallet.</p>
+
+  <div class="prose block">
+    <h2>What a host does</h2>
+    <p>A host can be a hosting service running many skeins, your own machine, or a browser tab running one. Whatever it is, it does the same few jobs: routes requests to the right skein, provides signing outside the sandbox, makes outside requests on the skein’s behalf, follows Bitcoin feeds, wakes sleeping tasks on time, and connects to peer-to-peer networks. It makes no decisions. Everything that matters happens inside the skein, so a skein can move between hosts. <span class="status built">built</span></p>
+    <p class="quiet">There’s no public hosting yet.</p>
+
+    <h2>What it costs</h2>
+  </div>
+  <div class="block" style="max-width:var(--measure);margin-top:14px">
+    <dl class="swap">
+      <div><dt>Computation</dt><dd>Measured per step, as the work counts already in the history. <span class="status built">metered</span></dd></div>
+      <div><dt>Storage</dt><dd>Everything the graph keeps. Visible in the history already.</dd></div>
+      <div><dt>Anchoring</dt><dd>Whatever you choose to put on chain, and how often.</dd></div>
+    </dl>
+    <p class="quiet" style="font-size:16px;margin-top:12px">No prices are set yet.</p>
+  </div>
+
+  <div class="prose block">
+    <h2>How it would pay <span class="status">designed</span></h2>
+    <p>The skein funds a one-way payment channel with its host: money locked so that both must sign to spend it, with a timed refund back to the skein so it can’t be held hostage. As usage builds up, the skein signs a new version paying the host a bit more. The host keeps only the latest and settles it on a top-up or a close. When the funds run out, the skein stops. Fund it again and it carries on where it left off.</p>
+
+    <h2>Getting one <span class="status">designed</span></h2>
+    <p>Starting a skein is itself a short conversation with a host:</p>
+    <ol style="margin:0;padding-left:1.3em;display:grid;gap:8px">
+      <li>You ask the host for a new skein under the handle you want.</li>
+      <li>The host replies with the minimum funding and an address in the new skein’s wallet.</li>
+      <li>You pay.</li>
+      <li>The skein starts from its system tree with your key as its admin, and a small token lands in your wallet so you can find it again.</li>
+    </ol>
+    <p>skein.nexus is meant to become the page where you connect your wallet and see and manage the skeins you control.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Go deeper</span>
+    <div class="cards">
+      <a href="#t-arch"><em>Technical</em><b>Architecture</b><span>Kernel, programs, runtimes, and the host.</span></a>
+      <a href="#t-status"><em>Technical</em><b>What is built</b><span>Built, in progress, designed.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-ARCH -->
+<article data-page="t-arch">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Architecture</h1>
+  <p class="lede">A deterministic WASI machine over a content-addressed graph. It has three layers: one kernel, a catalogue of programs, and several runtimes that drive the kernel from outside.</p>
+
+  <div class="block">
+    <div class="fig-inline" style="max-width:860px" role="img" aria-label="Diagram: a runtime (the host) provides routing, a signer, feeds, a libp2p host, a waker, a fuel ledger and an HTTP proxy. It drives one kernel per instance. Each kernel runs programs: front door, messagebox, wallet, loop and others, over a store of records.">
+      <svg viewBox="0 0 860 400" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12">
+        <defs><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>
+        <!-- outside -->
+        <text x="16" y="40" fill="var(--ink-2)">clients · peers · agents</text>
+        <text x="16" y="58" fill="var(--ink-2)">Bitcoin feeds · web · libp2p</text>
+        <path d="M110,70 V96" stroke="var(--ink-3)" stroke-width="1.3" marker-end="url(#aa)" marker-start="url(#aa)"/>
+        <!-- runtime -->
+        <rect x="16" y="100" width="828" height="92" rx="12" fill="var(--sunk)" stroke="var(--rule)"/>
+        <text x="32" y="124" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="15" font-weight="600">runtime (host): a server · a desktop · a browser tab</text>
+        <g font-size="11.5">
+          <rect x="32" y="140" width="120" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="44" y="162" fill="var(--ink)">routing</text>
+          <rect x="164" y="140" width="92" height="36" rx="6" fill="var(--surface)" stroke="var(--keys)"/><text x="178" y="162" fill="var(--keys)">signer</text>
+          <rect x="268" y="140" width="84" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="284" y="162" fill="var(--ink)">feeds</text>
+          <rect x="364" y="140" width="108" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="376" y="162" fill="var(--ink)">libp2p host</text>
+          <rect x="484" y="140" width="80" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="498" y="162" fill="var(--ink)">waker</text>
+          <rect x="576" y="140" width="112" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="588" y="162" fill="var(--ink)">fuel ledger</text>
+          <rect x="700" y="140" width="128" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="712" y="162" fill="var(--ink)">http proxy</text>
+        </g>
+        <!-- contract -->
+        <path d="M430,194 V222" stroke="var(--ink-3)" stroke-width="1.3" marker-end="url(#aa)" marker-start="url(#aa)"/>
+        <text x="444" y="214" fill="var(--ink-3)" font-size="11">frames: admit · call · wallet · http · libp2p</text>
+        <!-- kernel -->
+        <rect x="16" y="226" width="828" height="158" rx="12" fill="var(--ground)" stroke="var(--ink)" stroke-width="1.6"/>
+        <text x="32" y="250" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="15" font-weight="600">kernel: one per instance (Zig + wasmtime)</text>
+        <rect x="32" y="264" width="520" height="104" rx="8" fill="none" stroke="var(--sandbox)" stroke-dasharray="5 4"/>
+        <text x="44" y="284" fill="var(--sandbox)" font-size="11.5">programs (WASI p1 modules / 0.2 components)</text>
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="44" y="296" width="92" height="28" rx="5" fill="var(--surface)" stroke="var(--keys)"/><text x="54" y="314">front door</text>
+          <rect x="144" y="296" width="96" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="154" y="314">messagebox</text>
+          <rect x="248" y="296" width="68" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="258" y="314">wallet</text>
+          <rect x="324" y="296" width="56" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="334" y="314">loop</text>
+          <rect x="388" y="296" width="72" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="398" y="314">overlay</text>
+          <rect x="468" y="296" width="72" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="478" y="314">resolve</text>
+          <rect x="44" y="332" width="200" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="54" y="350">shell · git · qjs · python</text>
+          <rect x="252" y="332" width="288" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="262" y="350">run · objects · head · subscribe</text>
+        </g>
+        <rect x="568" y="264" width="260" height="104" rx="8" fill="none" stroke="var(--graph)"/>
+        <text x="580" y="284" fill="var(--graph)" font-size="11.5">store (any key → bytes store)</text>
+        <g font-size="11" fill="var(--ink-2)">
+          <text x="580" y="306">records by CID</text>
+          <text x="580" y="324">log · chains · MST index maps</text>
+          <text x="580" y="342">one state record</text>
+          <text x="580" y="360" fill="var(--graph)">= the instance's one pointer</text>
+        </g>
+      </svg>
+    </div>
+    <p class="figcap">The runtime judges nothing. Everything that matters is decided by programs inside the kernel and written to the store.</p>
+  </div>
+
+  <div class="prose block">
+    <h2>Kernel</h2>
+    <p>The machine: store, log, scheduler, the WASI implementation and skein’s own imports, over wasmtime (C API, statically linked). One implementation, <code>kernel-zig</code>, which also compiles to <code>wasm32-freestanding</code> for the browser. CLI: <code>skein-kernel serve | replay | shell | dump | fuel</code>.</p>
+
+    <h2>Programs and the SDK</h2>
+    <p>A catalogue, not a fixed set: front door, messagebox, wallet, resolve, overlay, fetch, p2p, the workbench programs (<code>run</code>, <code>objects</code>, <code>head</code>, <code>subscribe</code>, <code>loop</code>) and the SDK they’re written against. Each genesis wires its own subset; none is mandatory. The stock programs are Zig, 70–670 KB each.</p>
+
+    <h2>Runtimes</h2>
+    <p>Whatever drives a kernel from outside. A runtime implements one contract: admitting entries, making calls, giving the kernel a store, and answering its outbound requests (signing, HTTP, libp2p). How it holds keys, where it stores bytes and how it’s deployed are its own business. Today there’s a server runtime and a browser runtime, and the same history replays under either.</p>
+
+    <h2>The kernel’s whole surface</h2>
+    <dl class="swap">
+      <div><dt>admit</dt><dd>The one call in that writes: append a log entry, then run the steps it drives.</dd></div>
+      <div><dt>call</dt><dd>Run a program function over current state. No entry, no writes, not replayed; its fuel goes to the host’s ledger. Every web read is one of these.</dd></div>
+      <div><dt>wallet</dt><dd>Out: key operations, answered by the runtime’s signer.</dd></div>
+      <div><dt>http</dt><dd>Out: a request, made by the runtime’s proxy and recorded with its response on the step. The proxy signing both is designed.</dd></div>
+      <div><dt>libp2p</dt><dd>Out: publish, dial, send, receive, close. Recorded like http.</dd></div>
+    </dl>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-data"><em>Technical</em><b>Data model: git + Bitcoin</b><span>Records, codecs, the index.</span></a>
+      <a href="#t-vm"><em>Technical</em><b>The kernel and VM</b><span>Syscalls, fuel, time, replay.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-DATA -->
+<article data-page="t-data" style="--pc:var(--graph)">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Data model: git and Bitcoin in one graph</h1>
+  <p class="lede">Every durable thing is a record: one IPLD object named by its CID. Git objects, Bitcoin structures and skein’s own records use different codecs and hashes, but they all live in one store and link to each other by CID.</p>
+
+  <div class="block" style="max-width:var(--measure)">
+    <p class="label" style="margin-bottom:8px">Families of record</p>
+    <dl class="swap head">
+      <div><dt>Family</dt><dd>Codec · hash · what the CID equals</dd></div>
+      <div><dt>skein</dt><dd><code>dag-cbor</code> · sha2-256. Log entries, thread origins and updates, messages, index nodes, the state record.</dd></div>
+      <div><dt>git</dt><dd><code>git-raw</code> · sha1. <b>A tree’s CID is its git object id.</b> A scanned directory hashes identically to <code>git write-tree</code>.</dd></div>
+      <div><dt>bitcoin</dt><dd><code>bitcoin-block</code> (0xb0) · dbl-sha2-256: CID = block hash. <code>bitcoin-tx</code> (0xb1): CID = txid. Exactly 64 bytes under <code>bitcoin-tx</code> is a Merkle node, whose CID is its Merkle hash.</dd></div>
+      <div><dt>raw</dt><dd>Wasm modules and the Python stdlib.</dd></div>
+    </dl>
+  </div>
+
+  <div class="block">
+    <div class="fig-inline" style="max-width:860px" role="img" aria-label="Diagram: a block header links to its Merkle root, which links down through Merkle nodes to a transaction. The transaction's inputs link to earlier transactions (spends edges). A git tree links to blobs and subtrees. A thread update links to a tree and to a kept transaction.">
+      <svg viewBox="0 0 860 330" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11.5">
+        <defs><marker id="da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>
+        <text x="16" y="24" fill="var(--keys)" font-size="12">bitcoin</text>
+        <g fill="var(--surface)" stroke="var(--keys)" stroke-width="1.4">
+          <rect x="16" y="36" width="190" height="46" rx="6"/>
+          <rect x="16" y="112" width="190" height="40" rx="6"/>
+          <rect x="16" y="180" width="190" height="40" rx="6"/>
+          <rect x="16" y="250" width="190" height="46" rx="6"/>
+          <rect x="250" y="250" width="160" height="46" rx="6"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="28" y="56">header (bitcoin-block)</text><text x="28" y="72" fill="var(--ink-3)">CID = block hash</text>
+          <text x="28" y="136">merkle root (64 B)</text>
+          <text x="28" y="204">merkle node (64 B)</text>
+          <text x="28" y="270">tx (bitcoin-tx)</text><text x="28" y="286" fill="var(--ink-3)">CID = txid</text>
+          <text x="262" y="270">earlier tx</text><text x="262" y="286" fill="var(--ink-3)">CID = txid</text>
+        </g>
+        <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#da)">
+          <path d="M110,82 V110"/><path d="M110,152 V178"/><path d="M110,220 V248"/>
+          <path d="M206,273 H248"/>
+        </g>
+        <text x="120" y="98" fill="var(--ink-3)">merkleroot</text>
+        <text x="120" y="168" fill="var(--ink-3)">left / right</text>
+        <text x="212" y="318" fill="var(--keys)">vin → spends</text>
+        <text x="430" y="24" fill="var(--graph)" font-size="12">git</text>
+        <g fill="var(--surface)" stroke="var(--graph)" stroke-width="1.4">
+          <rect x="430" y="36" width="170" height="46" rx="6"/>
+          <rect x="430" y="112" width="80" height="36" rx="6"/>
+          <rect x="520" y="112" width="80" height="36" rx="6"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="442" y="56">tree (git-raw)</text><text x="442" y="72" fill="var(--ink-3)">CID = git tree id</text>
+          <text x="442" y="134">blob</text><text x="532" y="134">tree</text>
+        </g>
+        <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#da)"><path d="M480,82 V110"/><path d="M560,82 V110"/></g>
+        <text x="640" y="24" fill="var(--sandbox)" font-size="12">skein (dag-cbor)</text>
+        <g fill="var(--surface)" stroke="var(--sandbox)" stroke-width="1.4">
+          <rect x="630" y="36" width="220" height="46" rx="6"/>
+          <rect x="640" y="180" width="200" height="46" rx="6"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="642" y="56">thread update</text><text x="642" y="72" fill="var(--ink-3)">state · step · calls · fuel</text>
+          <text x="652" y="200">state record</text><text x="652" y="216" fill="var(--ink-3)">log · heads · index roots</text>
+        </g>
+        <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#da)">
+          <path d="M630,58 H602"/>
+          <path d="M700,84 C700,200 260,190 180,246"/>
+        </g>
+        <text x="604" y="50" fill="var(--ink-3)">tree</text>
+        <text x="440" y="192" fill="var(--ink-3)">keeps a tx</text>
+      </svg>
+    </div>
+    <p class="figcap">Links run from the newer record to the older one by CID, whatever the codec. Only transaction inputs add “spends” edges to the index.</p>
+  </div>
+
+  <div class="prose block">
+    <h2>Git mapping</h2>
+    <p>A repository in a tree is an ordinary git repository, except that <code>.git/objects</code> is synthetic: each loose object is served on the fly from its <code>git-raw</code> record, and writes are inflated, sha1-checked and kept as records. No object is stored twice, and there are no packs. An agent’s deployed tree <i>is</i> its repository’s tree.</p>
+
+    <h2>Bitcoin mapping</h2>
+    <p>Headers decode to <code>{version, previousblockhash → link, merkleroot → link, time, bits, nonce}</code>; transactions to <code>{version, vin: [{txid → link, vout, …}], vout, locktime}</code>, with bitcoind’s field names. Proofs are held sparsely: receiving a BUMP (BRC-74) checks its root against the header at that height, then stores each node it reveals. Conflicting nodes and wrong roots are refused. A <code>proofs</code> map records txid → <code>{block, depth, position}</code>, and a proof is rebuilt by walking down from the header by the position’s bits.</p>
+
+    <h2>Chains</h2>
+    <p>Anything that changes is a chain: an <b>origin</b> (its identity) and <b>updates</b> carrying <code>origin</code>, <code>prev</code> and <code>seq</code>. Point at the origin for “as it is now”, at an update for “exactly this version”. Threads, heads, subscriptions and the address book are all chains.</p>
+
+    <h2>The index and the state record</h2>
+    <p>The store is a key→bytes map plus one pointer. Each query the scheduler needs is its own Merkle search tree (fan-out ~32, canonical: the same pairs give the same root in any order): <code>log</code>, <code>unique</code>, <code>chains</code>, <code>threads</code>, <code>resting</code>, <code>sleepers</code>, <code>awaits</code>, <code>edges</code>, <code>heads</code>. One <code>skein-state</code> record holds the log tip and every map’s root. Its CID is the instance’s single mutable pointer and a function of the log: same log, same state CID.</p>
+    <p class="quiet">Cost: 2.5–7.5 new index nodes (0.6–4.2 KiB) plus ~1 KiB of state records per log entry. Pruning old index history is designed, not built.</p>
+
+    <h2>Edges</h2>
+    <p>The <code>edges</code> map indexes who points at what, derived from records a step <i>keeps</i>: <code>launched-by</code>, <code>depends-on</code>, <code>resolves</code>, record <code>refs</code>, and <code>spends</code> for kept transactions’ inputs. “Who spent txid:vout” is a prefix scan. Rejection propagates along <code>spends</code>, <code>admits</code> and <code>derives-from</code>.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-vm"><em>Technical</em><b>The kernel and VM</b><span>What produces the records.</span></a>
+      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>What reads the Bitcoin records.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-VM -->
+<article data-page="t-vm" style="--pc:var(--sandbox)">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">The kernel and VM</h1>
+  <p class="lede">A WASI machine where every input is a log entry and every value that didn’t come from the log is recorded. Replay is exact, and computation is metered by instruction count.</p>
+
+  <div class="prose block">
+    <h2>ABIs</h2>
+    <p>Programs are WASI preview1 core modules or WASI 0.2 components (world <code>skein:kernel/handler</code>). The kernel tells them apart by the binary preamble and gives both one behaviour: 0.2 filesystem and io calls are answered by the preview1 implementation. Imports the kernel doesn’t answer (sockets, say) link as traps.</p>
+
+    <h2>Two kinds of syscall</h2>
+    <dl class="swap">
+      <div><dt>Pure</dt><dd>Files, pipes, spawn, stdio, clock, random. Answered inside, deterministically, never recorded.</dd></div>
+      <div><dt>Recorded</dt><dd><code>wallet</code>, <code>http</code>, <code>libp2p</code>. The request and answer are written on the step’s update; replay serves them from there, and a request that differs on replay is a divergence.</dd></div>
+      <div><dt>Graph</dt><dd><code>get</code>/<code>put</code>/<code>putblock</code> by CID, <code>keep</code>, <code>launch</code>, <code>await</code>, <code>advance</code> (heads), <code>subscribe</code>, <code>deadline</code>, <code>edges</code>, <code>call</code>.</dd></div>
+    </dl>
+
+    <h2>Time</h2>
+    <p>The runtime stamps each entry at admission. Inside a step, <code>t = max(last + 1, stamp + fuel)</code>, one unit of fuel per clock tick: time never repeats, never goes back, and is recomputed exactly on replay. A shell and its children share one meter and one clock. Busy-waits end on their own. Sleep is a deadline; the waker admits one <code>wake</code> entry when it comes, and there are no periodic wake-ups.</p>
+
+    <h2>Randomness</h2>
+    <p>SHA-256(key ‖ counter) blocks, key = SHA-256(entry CID ‖ thread CID). Python’s <code>random</code>, <code>uuid4</code>, QuickJS <code>Math.random</code> and git’s temp names all draw on it and replay identically. It’s predictable from public records, so secrets are made by the signer instead.</p>
+
+    <h2>Fuel</h2>
+    <p>wasmtime fuel is on for every step and summed across everything in it (handler, shell, children, nested calls). The limit is <code>fuelPerStep</code> (default 10<sup>12</sup>); running out ends the step <code>errored</code>, deterministically, and it’s never retried. Kernel calls have their own limit (10<sup>10</sup>) and are charged to the host ledger. <code>skein-kernel fuel</code> is the billing query. Overhead is 0–9%. In the browser, where V8 has no fuel, the kernel instruments each module to count its own, and the counts match wasmtime’s.</p>
+
+    <h2>Replay</h2>
+    <p><code>skein-kernel replay</code> rebuilds a store from its log with no wallet or network. The equivalence suite replays 16 real histories twice, natively, instrumented and in headless Chrome, and requires identical dumps, fuel and explorer pages. Signatures are deterministic (RFC 6979), so they replay too. Crash recovery is replay at hydrate time: a cut-off step runs again.</p>
+
+    <h2>Userland</h2>
+    <ul>
+      <li><b>Shell</b>: brush (bash-compatible, Rust) over uutils coreutils, plus find, xargs, diff, jq (jaq), sed, awk, tree and grep. Pipelines run stage by stage, with 64 MiB pipes.</li>
+      <li><b>git 2.55</b> in C via wasi-sdk: init to merge (three-way, conflicts), tag, fsck. No remotes, no packs. Commit dates come from the in-step clock, so commit IDs replay.</li>
+      <li><b>qjs</b> (QuickJS-ng) registered as <code>node</code> with a sync Node shim, and <b>CPython 3.14</b> with its stdlib mounted read-only. No npm, no pip, no sockets.</li>
+      <li><b>Size</b>: 13.7 MB for the shell toolset, plus 19.1 MB for the script runtimes.</li>
+    </ul>
+
+    <h2>Browser build</h2>
+    <p>The same kernel for <code>wasm32-freestanding</code> (2.4 MB) in a Worker, with IndexedDB as the store. It needs cross-origin isolation. It runs preview1 modules only, with no libp2p yet. Logs cross between browser and native in both directions.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-net"><em>Technical</em><b>Messages and network</b><span>How entries get admitted.</span></a>
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>How a kernel gets its programs.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-NET -->
+<article data-page="t-net" style="--pc:var(--keys)">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Messages and network</h1>
+  <p class="lede">The instance is an HTTP server. BRC-103/104 is the network, BRC-33 is the mailbox, BRC-169 is discovery, and only messages are state.</p>
+
+  <div class="prose block">
+    <h2>The front door</h2>
+    <p>Each instance has its own origin (<code>&lt;handle&gt;.host</code>, or <code>/@handle</code>). The runtime forwards every request as one kernel <code>call</code> of the front-door program, which runs the BRC-103/104 handshake and verifies each message inside the VM. The caller is the identity key the session proved; there are no accounts. Answers are signed on the session through the runtime’s signer.</p>
+    <p><code>etc/routes.json</code> maps paths to program functions (auth defaults to BRC-104; <code>"none"</code> is for open routes like overlay submit). <code>etc/reads.json</code> gates read routes by caller. A handler answers <code>{status, body, admit?, then?}</code>, and <code>admit</code> lists the entries to write.</p>
+
+    <h2>The persistence rule</h2>
+    <dl class="swap">
+      <div><dt>Message arrives</dt><dd>One <code>mail</code> entry, carrying the signed BRC-104 request, so authorship verifies from the log with keys alone.</dd></div>
+      <div><dt>Read or poll</dt><dd>Nothing. Tested at 10,000 polls: 0 entries, 0 bytes.</dd></div>
+      <div><dt>Handshake</dt><dd>Nothing. Sessions are held in memory, never in the log; after a restart the client simply handshakes again.</dd></div>
+      <div><dt>Acknowledgement</dt><dd>One entry: the reader’s pointer moves.</dd></div>
+      <div><dt>Sending</dt><dd>Part of the sending step: a recorded <code>http</code> call and the record it put. Not an entry.</dd></div>
+    </dl>
+
+    <h2>Routing inside</h2>
+    <p>A body with <code>replyTo</code> resumes the thread awaiting that record, but only from the identity it was sent to. Otherwise a message is routed by subscription on <code>(sender, box)</code>, first match wins. “A subscription is the permission”; the subscription table is itself a chain. No match means it’s recorded and nothing runs.</p>
+
+    <h2>Mailboxes, delivery, discovery</h2>
+    <ul>
+      <li><b>Messagebox program</b>: BRC-33 send/list/ack (JSON or BRC-231 CBOR). An instance’s own boxes keep no list: admission is the acknowledgement, and the log is the queue.</li>
+      <li><b>Mailbox instances</b>: an outside identity (a person, the inference peer, a browser tab) gets an instance with only the front door and messagebox. There’s no separate messagebox host.</li>
+      <li><b>Delivery</b>: <code>send</code> looks up the address book (head <code>peers</code>: key → mailbox URL), reuses a BRC-104 session, and POSTs as a recorded call. Transient and permanent failures are distinguished; an unknown key is “no route”.</li>
+      <li><b>Discovery</b> (BRC-169) is a program, not core: manifest, then handle → identity key and messagebox, as recorded calls.</li>
+    </ul>
+
+    <h2>Inference protocol</h2>
+    <p>The loop sends <code>{model, thinking?, tools?, parent?, nodes}</code>, where <code>nodes</code> are only the turn records new since the last request, each with its CID and <code>parent</code>. The inference peer stores nodes per sender, walks back to the root and sends the engine the whole chat. If it lacks a node it answers <code>{missing: [cid]}</code> and the loop resends once. The completion arrives as mail with <code>replyTo</code>, and resumes the thread.</p>
+
+    <h2>libp2p</h2>
+    <p>The runtime runs a libp2p node for each instance that asks for one (GossipSub with strict signing). Inbound arrives as front-door calls; an accepted topic message is one <code>p2p</code> entry that re-verifies from the log; duplicates and rejects write nothing. Outbound is the recorded <code>libp2p</code> import. The peer key is separate from the identity key and never holds funds.</p>
+    <p class="quiet">Designed, not built: the front door forwarding admitted entries on every transport (today a transaction arriving by pubsub doesn’t persist overlay state the way <code>POST /submit</code> does).</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>The signer and what it signs.</span></a>
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>Where routes and subscriptions come from.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-WALLET -->
+<article data-page="t-wallet" style="--pc:var(--keys)">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Wallet and overlays</h1>
+  <p class="lede">The wallet is split in two: the keys stay outside with the runtime’s signer, and wallet state lives inside as records. The overlay node shares the same chain and settlement core.</p>
+
+  <div class="prose block">
+    <h2>The signer</h2>
+    <p>The kernel holds no keys. Key operations (get public key, sign, encrypt/decrypt, HMAC, verify) are requests to the runtime’s signer, which might be a hosting service’s key store, a hardware module, or the user’s own BRC-100 wallet in a browser tab. A signing request carries a key reference and a 32-byte hash, nothing else. How keys are made, stored and derived is the runtime’s business and outside the skein.</p>
+
+    <h2>The wallet program</h2>
+    <p><code>wallet-zig</code> over bsvz, compiled to wasm. Operations include <code>headers</code>, <code>internalize</code> (BRC-100 internalizeAction on Atomic BEEF), <code>proof</code>, <code>createAction</code>, <code>signAction</code> and <code>list</code>. The builder picks the largest spendable outputs first, sends change to a fresh BRC-29 key, and returns Atomic BEEF with ancestry back to proven transactions. It matches go-sdk’s ProtoWallet byte for byte on shared test vectors. A genesis opts into it; it isn’t there by default.</p>
+
+    <h2>SPV and headers</h2>
+    <p>The anchor is the network’s genesis header, a constant. Every header must link, meet its proof-of-work target and carry the most work. Difficulty adjustment and timestamps aren’t checked, by decision. A payment validates synchronously or fails. A signing-only wallet needs no headers; the full chain (~72 MB) lives only in an instance fed by a header service. Chronicle rules are on by default.</p>
+
+    <h2>Feeds</h2>
+    <p>The runtime holds subscriptions an instance declares (a header stream, and transaction status callbacks) and admits each item as a plain event entry. It judges nothing: headers and proofs validate themselves inside, and a broadcast status is provisional until there’s a proof.</p>
+
+    <h2>Settlement</h2>
+    <p><i>Unproven</i>, <i>proven</i> or <i>rejected</i> is computed, never stored. Rejection bubbles through <code>spends</code> edges; reorgs revert proofs. Settlement is state to read, not an event to push. Threads fork, they don’t replay: a rejection reaches a thread as a new input, and history stays.</p>
+
+    <h2>Overlay node</h2>
+    <p>An instance can serve BRC-22/24 through its own front door (<code>POST /submit</code>, <code>POST /lookup</code>, open auth). Submit decodes the BEEF once into records in the call’s scratch space, runs SPV, and asks topic managers <code>identify(tx: cid, …)</code>. <b>Nothing persists unless a topic admits</b>; otherwise it answers 200 with an empty STEAK and the store is byte-identical. Lookup services keep their own maps and get <code>admitted</code>/<code>spent</code>/<code>rejected</code> hooks. Tested against the stock <code>@bsv/sdk</code> broadcaster and resolver.</p>
+    <p class="quiet">Not built: SHIP/SLAP advertisement, GASP sync, certificates, header catch-up, proofs on demand. One broadcaster per host is designed.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>How an instance starts.</span></a>
+      <a href="#t-status"><em>Technical</em><b>What is built</b><span>Status by area.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-DEPLOY -->
+<article data-page="t-deploy">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Genesis and deployment</h1>
+  <p class="lede">An instance’s first log entry, its genesis, names who it is and the tree it boots from. Everything after is a consequence of that entry and the ones that follow.</p>
+
+  <div class="prose block">
+    <h2>The system tree</h2>
+<pre style="font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;overflow-x:auto;margin:0">bin/&lt;name&gt;.wasm | .cid | .json   programs
+etc/config.json                   defaults, peers, feeds, owner, libp2p
+etc/subscriptions.json            (sender, box) → program   (required)
+etc/routes.json                   HTTP path → program fn
+etc/reads.json                    who may call read routes
+SOUL.md, IDENTITY.md, skills/…    the instance's own files</pre>
+    <p>Booting pre-fills the store and writes a genesis naming the tree; processing it sets head <code>main</code>. The genesis also fixes the owner, the default limits and the owner’s mailbox for the life of the store.</p>
+
+    <h2>Two sources, one loader</h2>
+    <ul>
+      <li><b>A directory</b>, scanned into git objects, or a tree CID already in a store.</li>
+      <li><b>A chain packet</b>: a BEEF bag plus a scope CID, verified offline for scope, hashes, completeness and, optionally, chain inclusion. Carriers are <code>OP_FALSE OP_RETURN</code> outputs with <code>ordfs/dir</code> (a gib directory manifest) or <code>ordfs/patch</code>. A gib commit and a clone of it yield the same store.</li>
+    </ul>
+
+    <h2>Checkpoints</h2>
+    <p>A packet whose scope is a <code>skein-state</code> record is a checkpoint. It restores onto an empty store without rebuilding the index, as long as it runs under the same identity. A stock-system checkpoint is ~88 MB, because it includes the shell and Python.</p>
+
+    <h2>Deploying files vs booting</h2>
+    <p>Booting sets up a new store. Deploying sends files into a running instance: an agent’s <code>SOUL.md</code>, <code>IDENTITY.md</code> and <code>skills/</code> go in through the <code>objects</code> box as an ordinary signed message from the owner.</p>
+
+    <h2>Upgrades are re-genesis</h2>
+    <p>New program versions apply to new geneses; an existing store keeps the modules its genesis names, and older formats aren’t migrated. Upgrading today means a new store.</p>
+    <p class="quiet">Not built: a command that takes a commit ID directly, publishing packets on chain (the packet writer makes never-broadcast transactions for tests), and checkpoints anchored as gib heads.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-status"><em>Technical</em><b>What is built</b><span>Status by area.</span></a>
+      <a href="#running"><em>Running one</em><b>Hosting, cost, getting one</b><span>Back to the overview level.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-STATUS -->
+<article data-page="t-status">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">What is built</h1>
+  <p class="lede">Status by area, as of the end of September 2026. “Built” means merged, with tests.</p>
+
+  <div class="block" style="max-width:var(--measure)">
+    <div class="levels">
+      <div><h4>Kernel</h4><p><span class="status built">built</span> Zig kernel on wasmtime, both ABIs, fuel, fuel clock, deterministic random, replay, MST index, single state record, browser build.</p></div>
+      <div><h4>Userland</h4><p><span class="status built">built</span> Shell and tools, git, JavaScript, Python. <span class="status">gaps</span> tar/gzip, packages, streaming pipes.</p></div>
+      <div><h4>Network</h4><p><span class="status built">built</span> Front door with BRC-103/104, routes and reads, mailbox instances, messagebox, address book, discovery, libp2p. <span class="status">designed</span> Admitting on every transport.</p></div>
+      <div><h4>Wallet</h4><p><span class="status built">built</span> Signer interface, wallet program, SPV, feeds, sparse proofs, settlement. <span class="status">not yet</span> Header catch-up, proofs on demand, certificates.</p></div>
+      <div><h4>Overlay</h4><p><span class="status built">built</span> Topic managers and lookup services on CIDs. <span class="status">not yet</span> SHIP/SLAP, GASP. <span class="status">designed</span> One broadcaster per host.</p></div>
+      <div><h4>Inference</h4><p><span class="status built">built</span> Inference peer, context deltas, turn records, tool steps. <span class="status">not yet</span> Forking UI, budgets.</p></div>
+      <div><h4>Deployment</h4><p><span class="status built">built</span> System trees, reading chain packets, checkpoints. <span class="status">not yet</span> Publishing on chain, commit-ID boot.</p></div>
+      <div><h4>Hosting &amp; payments</h4><p><span class="status built">built</span> Metering. <span class="status">designed</span> Payment channel billing, stand-up flow, tolls on messages. <span class="status">not yet</span> Public hosting, prices.</p></div>
+      <div><h4>Graph ops</h4><p><span class="status built">built</span> Heads, git branches and merges, conversation parents, checkpoint restore. <span class="status">not yet</span> Forking or merging whole instances.</p></div>
+    </div>
+    <p class="quiet" style="font-size:15.5px;margin-top:14px">Latest suites: kernel 45/45, wallet 25/25, overlay 2/2, npm 124/124, equivalence 199 ok, 0 fail. The tracker is <a href="https://github.com/shruggr/skein/issues/31">issue #31</a>.</p>
+  </div>
+</article>
+  </main>
+
+  <footer>
+    <span>skein.nexus · draft</span>
+    <span>engine: <a href="https://github.com/shruggr/skein">github.com/shruggr/skein</a></span>
+  </footer>
+</div>
+
+<script>
+// The page tree. `lvl`: 1 overview, 2 in depth, 3 technical. Pages without an <article> show as "later".
+const TREE = [
+  { id:'overview', title:'Overview', lvl:1, home:true },
+  { group:'What it is', items:[
+    { id:'sandbox', title:'The sandbox', lvl:2, color:'sandbox' },
+    { id:'keys', title:'Keys and the door', lvl:2, color:'keys' },
+    { id:'graph', title:'The graph', lvl:2, color:'graph' },
+  ]},
+  { group:'What you can do', items:[
+    { id:'inference', title:'Traceable inference', lvl:2 },
+    { id:'identity', title:'A skein per agent', lvl:2 },
+    { id:'network', title:'Skeins together', lvl:2 },
+    { id:'yourwork', title:'One graph of your work', lvl:2 },
+    { id:'bitcoin', title:'Your slice of Bitcoin', lvl:2 },
+    { id:'anywhere', title:'Start from a commit', lvl:2 },
+  ]},
+  { group:'Running one', items:[
+    { id:'running', title:'Hosting, cost, getting one', lvl:2 },
+  ]},
+  { group:'Technical', items:[
+    { id:'t-arch', title:'Architecture', lvl:3 },
+    { id:'t-data', title:'Data model: git + Bitcoin', lvl:3 },
+    { id:'t-vm', title:'The kernel and VM', lvl:3 },
+    { id:'t-net', title:'Messages and network', lvl:3 },
+    { id:'t-wallet', title:'Wallet and overlays', lvl:3 },
+    { id:'t-deploy', title:'Genesis and deployment', lvl:3 },
+    { id:'t-status', title:'What is built', lvl:3 },
+  ]},
+];
+const LEVELS = {1:'Overview',2:'In depth',3:'Technical'};
+const pages = {};
+document.querySelectorAll('article[data-page]').forEach(a => pages[a.dataset.page] = a);
+const flat = [];
+TREE.forEach(n => n.group ? n.items.forEach(i => flat.push({...i, group:n.group})) : flat.push(n));
+
+function buildNav(){
+  const nav = document.getElementById('treeNav');
+  const link = i => pages[i.id]
+    ? `<a href="#${i.id}" data-id="${i.id}" ${i.color?`style="--pc:var(--${i.color})"`:''}>${i.color?`<span class="dot" style="background:var(--${i.color})"></span>`:''}${i.title}</a>`
+    : `<span class="todo">${i.title}</span>`;
+  nav.innerHTML = '<ol>' + TREE.map(n => n.group
+    ? `<li class="group"><span class="label">${n.group}</span><ol>${n.items.map(i=>`<li>${link(i)}</li>`).join('')}</ol></li>`
+    : `<li class="home">${link(n)}</li>`).join('') + '</ol>';
+}
+
+function crumbs(p){
+  const d = [1,2,3].map(n => `<i class="${n<=p.lvl?'f':''}"></i>`).join('');
+  const trail = p.home ? '' : `<a href="#overview">Overview</a><span>/</span><span>${p.group}</span><span>/</span><span>${p.title}</span>`;
+  return `<div class="crumbs">${trail}<span class="depth" title="Depth">${d}<b>${LEVELS[p.lvl]}</b></span></div>`;
+}
+
+function show(){
+  let id = (location.hash || '#overview').slice(1);
+  if(!pages[id]) id = 'overview';
+  const p = flat.find(x => x.id === id) || flat[0];
+  Object.values(pages).forEach(a => a.classList.toggle('on', a === pages[id]));
+  const a = pages[id];
+  if(!a.querySelector('.crumbs')) a.insertAdjacentHTML('afterbegin', crumbs(p));
+  document.querySelectorAll('#treeNav a').forEach(l => l.toggleAttribute('aria-current', l.dataset.id === id) && l.setAttribute('aria-current','page'));
+  document.title = p.home ? 'skein.nexus' : `${p.title} · skein.nexus`;
+  document.getElementById('tree').classList.remove('open');
+  document.getElementById('menuBtn').setAttribute('aria-expanded','false');
+  window.scrollTo(0,0);
+}
+
+buildNav();
+window.addEventListener('hashchange', show);
+document.getElementById('menuBtn').addEventListener('click', e => {
+  const t = document.getElementById('tree'); t.classList.toggle('open');
+  e.currentTarget.setAttribute('aria-expanded', t.classList.contains('open'));
+});
+show();
+</script>

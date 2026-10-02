@@ -1,0 +1,480 @@
+<title>skein.nexus</title>
+<meta name="description" content="Skein: one signed graph of your files, code, coins, proofs and messages. Your world, proven.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,500;1,7..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ground:#EDF0F4;
+  --surface:#F8F9FB;
+  --ink:#141A2C;
+  --ink-2:#4B5369;
+  --ink-3:#7A8196;
+  --rule:#D3D8E2;
+  --coin:#B0761A;
+  --code:#1B7A6D;
+  --msg:#4454CF;
+  --proof:#B5416A;
+  --accent:#4454CF;
+  --chip-bg:#E2E6EE;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Literata", Georgia, "Times New Roman", serif;
+  --mono:"IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --measure:64ch;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ground:#0D1120; --surface:#141A2C; --ink:#E5E8F1; --ink-2:#A2A9BE; --ink-3:#737B93;
+    --rule:#252C44; --coin:#E2A847; --code:#3CB9A6; --msg:#8D98FF; --proof:#EA789E;
+    --accent:#8D98FF; --chip-bg:#1E2540;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ground:#0D1120; --surface:#141A2C; --ink:#E5E8F1; --ink-2:#A2A9BE; --ink-3:#737B93;
+  --rule:#252C44; --coin:#E2A847; --code:#3CB9A6; --msg:#8D98FF; --proof:#EA789E;
+  --accent:#8D98FF; --chip-bg:#1E2540;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.62;
+  padding-inline:clamp(16px,4vw,48px);
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin-inline:auto}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible, summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+p{margin:0}
+code,.mono{font-family:var(--mono);font-size:.86em}
+.label{
+  font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+}
+
+/* top bar */
+.top{display:flex;justify-content:space-between;align-items:center;padding-block:22px;gap:16px;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:700;font-size:20px;color:var(--ink);text-decoration:none;letter-spacing:-.02em}
+.brand span{color:var(--ink-3);font-weight:400}
+.top nav{display:flex;gap:22px;flex-wrap:wrap;font-family:var(--mono);font-size:13px}
+.top nav a{color:var(--ink-2);text-decoration:none}
+.top nav a:hover{color:var(--ink)}
+
+/* hero */
+.hero{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(24px,4vw,56px);
+  align-items:center;padding-block:clamp(28px,6vw,72px) clamp(40px,6vw,80px);
+}
+.hero h1{font-size:clamp(46px,7.4vw,96px);line-height:.95;font-weight:700;letter-spacing:-.035em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .lede{margin-top:26px;font-size:clamp(18px,1.7vw,20px);max-width:36ch;color:var(--ink)}
+.hero .aside{margin-top:18px;max-width:40ch;color:var(--ink-2);font-size:16px}
+.loom{position:relative;width:100%;aspect-ratio:1.25/1;max-width:100%}
+.loom canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* sections */
+section{padding-block:clamp(44px,7vw,88px);border-top:1px solid var(--rule)}
+.sec-head{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:clamp(16px,4vw,56px)}
+.sec-head h2{font-size:clamp(28px,3.4vw,42px);line-height:1.08;font-weight:600}
+.prose{display:grid;gap:18px;max-width:var(--measure)}
+.prose p{color:var(--ink)}
+.prose .quiet{color:var(--ink-2)}
+
+/* the progression */
+.steps{margin-top:clamp(28px,5vw,56px);display:grid;gap:0;position:relative}
+.step{
+  display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr);gap:clamp(16px,4vw,56px);
+  padding-block:32px;position:relative;
+}
+.step + .step{border-top:1px dashed var(--rule)}
+.step-mark{display:flex;flex-direction:column;gap:10px}
+.step-mark .n{font-family:var(--mono);font-size:13px;color:var(--ink-3)}
+.threads{display:flex;gap:5px;height:6px}
+.threads i{display:block;width:26px;height:6px;border-radius:3px}
+.t-code{background:var(--code)}.t-coin{background:var(--coin)}.t-proof{background:var(--proof)}.t-msg{background:var(--msg)}
+.t-ghost{background:var(--rule)}
+.step h3{font-size:clamp(24px,2.6vw,32px);font-weight:600;line-height:1.1}
+.step .kicker{font-family:var(--display);font-size:17px;color:var(--ink-2);margin-top:6px}
+.step .body{display:grid;gap:16px;max-width:var(--measure)}
+
+/* technical disclosures */
+details.tech{
+  border:1px solid var(--rule);border-radius:10px;background:var(--surface);
+  max-width:var(--measure);
+}
+details.tech summary{
+  cursor:pointer;list-style:none;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:13px;color:var(--ink-2);
+}
+details.tech summary::-webkit-details-marker{display:none}
+details.tech summary::after{content:"+";font-size:18px;line-height:1;color:var(--ink-3)}
+details.tech[open] summary::after{content:"–"}
+details.tech[open] summary{border-bottom:1px solid var(--rule);color:var(--ink)}
+.tech-body{padding:16px 18px 18px;display:grid;gap:14px;font-size:15px;line-height:1.6;color:var(--ink-2)}
+.tech-body dl{display:grid;grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:10px 18px;margin:0}
+.tech-body dt{font-family:var(--mono);font-size:12.5px;color:var(--ink);padding-top:2px}
+.tech-body dd{margin:0}
+.tech-body code{color:var(--ink)}
+.chip{
+  display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;
+  padding:1px 7px;border-radius:999px;background:var(--chip-bg);color:var(--ink-2);vertical-align:1px;white-space:nowrap;
+}
+.chip.built{color:var(--code)}
+.chip.prog{color:var(--coin)}
+.chip.designed{color:var(--proof)}
+
+/* flow diagram */
+.flow{overflow-x:auto}
+.flow ol{list-style:none;margin:0;padding:4px 0;display:flex;align-items:center;gap:0;min-width:max-content}
+.flow li{display:flex;align-items:center}
+.flow .node{font-family:var(--mono);font-size:12px;padding:6px 10px;border:1px solid var(--rule);border-radius:6px;background:var(--ground);color:var(--ink)}
+.flow .edge{font-family:var(--mono);font-size:11px;color:var(--ink-3);padding:0 8px;display:flex;align-items:center;gap:6px}
+.flow .edge::after{content:"→";color:var(--ink-3)}
+
+/* trio */
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,3vw,36px);margin-top:28px}
+.trio h3{font-size:22px;font-weight:600}
+.trio p{margin-top:8px;color:var(--ink-2);font-size:16px}
+.trio .verb{font-family:var(--mono);font-size:12px;color:var(--accent);margin-bottom:10px;display:block}
+
+/* costs */
+.meters{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);border-radius:10px;overflow:hidden;margin-top:8px}
+.meter{background:var(--surface);padding:18px}
+.meter .label{display:block;margin-bottom:6px}
+.meter p{font-size:15px;color:var(--ink-2)}
+.meter strong{font-family:var(--display);font-weight:600;font-size:19px;color:var(--ink);display:block;margin-bottom:4px}
+
+/* stand-up flow */
+.handshake{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:0;max-width:var(--measure)}
+.handshake li{display:grid;grid-template-columns:110px minmax(0,1fr);gap:16px;padding-block:12px;border-top:1px solid var(--rule)}
+.handshake li:last-child{border-bottom:1px solid var(--rule)}
+.handshake .who{font-family:var(--mono);font-size:12.5px;color:var(--ink-3);padding-top:3px}
+
+footer{border-top:1px solid var(--rule);padding-block:32px 48px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--ink-3);font-family:var(--mono);font-size:12.5px}
+footer a{color:var(--ink-2)}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}
+  .loom{aspect-ratio:1.6/1}
+  .sec-head,.step{grid-template-columns:1fr;gap:14px}
+  .trio,.meters{grid-template-columns:1fr}
+  .tech-body dl{grid-template-columns:1fr;gap:2px}
+  .tech-body dd{margin-bottom:10px}
+  .handshake li{grid-template-columns:1fr;gap:2px}
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#top">skein<span>.nexus</span></a>
+    <nav aria-label="Sections">
+      <a href="#why">Why</a>
+      <a href="#layers">How it builds up</a>
+      <a href="#runs">Where it runs</a>
+      <a href="#costs">What it costs</a>
+      <a href="#start">Getting one</a>
+    </nav>
+  </header>
+
+  <div class="hero" id="top">
+    <div>
+      <h1>Your world, <em>proven.</em></h1>
+      <p class="lede">Skein is one graph for everything you do: your files and code, your coins and contracts, the proofs behind them, and every message in or out. Everything is signed as it happens. Anchor any of it to Bitcoin whenever you want anyone to be able to check it.</p>
+      <p class="aside">Git did this for source code: every copy carries its whole history, and anyone can verify it. Skein does the same for your part of Bitcoin, and for the work around it.</p>
+    </div>
+    <div class="loom" aria-hidden="true"><canvas id="loom"></canvas></div>
+  </div>
+
+  <section id="why">
+    <div class="sec-head">
+      <div><span class="label">Why</span><h2>Work is scattered</h2></div>
+      <div class="prose">
+        <p>One project lives in several repos on several machines. The coding assistants from different providers each keep their own history and memory. Your coins sit in a wallet, their proofs with an indexer, your tokens with another service. Nothing connects them, and most of it can't be checked after the fact.</p>
+        <p>Skein started as a way to put all of that in one graph you can traverse: an index and a change history for a whole working life, whether a person or a program did the work.</p>
+        <p class="quiet">Git, Bitcoin, signed messaging and language models grew up as separate worlds. Skein is where they meet, and each supplies something the others lack.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="layers">
+    <div class="sec-head">
+      <div><span class="label">How it builds up</span><h2>Built up in layers</h2></div>
+      <div class="prose"><p class="quiet">Start with the graph. Everything after it is something running on the graph, and it all goes into the same record.</p></div>
+    </div>
+
+    <div class="steps">
+      <!-- 1 -->
+      <article class="step">
+        <div class="step-mark">
+          <span class="n">1 · the graph</span>
+        </div>
+        <div class="body">
+          <div><h3>Your world, proven</h3><p class="kicker">Useful with nothing running in it.</p></div>
+          <p>Files and directories, coins and transactions, block headers and proofs are all records in a single content-addressed store. Signed messages are the only way anything gets in or out, so the record is complete: if it happened, it's in the graph, with the signature of whoever sent it.</p>
+          <p>Every change is signed as it happens. Anchoring is separate, and it's your choice: put a checkpoint, a single file or the whole graph on chain, as often as it's worth paying for.</p>
+          <details class="tech">
+            <summary>Technical details</summary>
+            <div class="tech-body">
+              <div class="flow" role="img" aria-label="A signed message travels from a peer through the message box into the log, is processed by a program, and any output leaves as another signed message.">
+                <ol>
+                  <li><span class="node">peer</span><span class="edge">signed msg</span></li>
+                  <li><span class="node">message box</span><span class="edge">entry</span></li>
+                  <li><span class="node">log</span><span class="edge">step</span></li>
+                  <li><span class="node">program</span><span class="edge">emit</span></li>
+                  <li><span class="node">peer</span></li>
+                </ol>
+              </div>
+              <dl>
+                <dt>records</dt><dd>Content-addressed blocks: CIDs over dag-cbor, sha2-256. Files are git blobs and trees, so a git repository is already a subtree of the graph. <span class="chip built">built</span></dd>
+                <dt>index</dt><dd>Merkle search trees behind one state record, so the whole state has a single hash that you can sign, anchor or compare. <span class="chip built">built</span></dd>
+                <dt>messages</dt><dd>BRC-33 message box and BRC-169 envelopes over BRC-103/104 mutual auth. The sender signs the content hash. Messages are encrypted on the wire, and the log holds the plaintext. <span class="chip built">built</span></dd>
+                <dt>wallet</dt><dd>BRC-100. Keys never enter the VM: it asks a signing oracle. UTXOs, headers, Merkle proofs and transaction status are records in the graph like everything else. <span class="chip prog">in progress</span></dd>
+                <dt>anchoring</dt><dd>A checkpoint is a BEEF packet whose scope is a state record. gib puts git on chain: write-once outputs, <code>ordfs/dir</code> directories, branch pointers as commit tokens. <span class="chip prog">in progress</span></dd>
+              </dl>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <!-- 2 -->
+      <article class="step">
+        <div class="step-mark">
+          <span class="n">2 · programs</span>
+        </div>
+        <div class="body">
+          <div><h3>Things that act on it</h3><p class="kicker">A robot, programmed or not.</p></div>
+          <p>A program runs inside the skein and works only on the graph. It reads files, writes trees, asks the wallet to sign and sends messages. It might be a scheduled job, a fixed workflow or a model deciding what to do next. To the graph they look the same, and every step each one takes is recorded.</p>
+          <p>Because the record is complete, any step can be replayed and gives the same result. You can check what happened by running it again, not just by reading a log someone wrote about it.</p>
+          <details class="tech">
+            <summary>Technical details</summary>
+            <div class="tech-body">
+              <dl>
+                <dt>the VM</dt><dd>A WASI machine: preview 1 modules and WASI 0.2 components, on a Zig kernel over wasmtime. Programs target WASI, not skein. <span class="chip built">built</span></dd>
+                <dt>no side doors</dt><dd>No disk, network, clock or process table. Anything that leaves the VM is a message out and a signed message back, recorded and replayed. <span class="chip built">built</span></dd>
+                <dt>userland</dt><dd>A POSIX-style shell (brush, coreutils, grep, sed, awk, jq, git) plus JavaScript and Python runtimes, all compiled to WASI and running over the graph's files. <span class="chip built">built</span></dd>
+                <dt>time &amp; chance</dt><dd>"Now" is the arrival stamp on the current entry plus the fuel burnt so far, at 1&nbsp;ns per unit. Randomness is a stream keyed by the entry's CID. That's why replay is exact. <span class="chip built">built</span></dd>
+                <dt>fuel</dt><dd>Every step is metered in wasm fuel, and the count is written on the step. This is what billing is based on. <span class="chip built">built</span></dd>
+              </dl>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <!-- 3 -->
+      <article class="step">
+        <div class="step-mark">
+          <span class="n">3 · conversation</span>
+        </div>
+        <div class="body">
+          <div><h3>Something you can talk to</h3><p class="kicker">Most people would call this an agent.</p></div>
+          <p>Connect chat to the message box and a program becomes something you work with. It has its own handle, identity and wallet. Each exchange is a signed message in its graph, and its tool calls and results are steps you can read back and replay.</p>
+          <p>Use any model, or none. Inference is just another party it exchanges messages with.</p>
+          <details class="tech">
+            <summary>Technical details</summary>
+            <div class="tech-body">
+              <dl>
+                <dt>inference</dt><dd>A peer. The prompt goes out as a message and the completion comes back signed by the provider. The model and the reasoning level are chosen per request. <span class="chip built">built</span></dd>
+                <dt>context</dt><dd>The conversation is part of the graph, so it goes to the model as deltas keyed by node, not as a whole transcript each time. <span class="chip built">built</span></dd>
+                <dt>tools</dt><dd>The shell, the files, and messages to other identities. A message it sends and the reply it gets are both records. <span class="chip built">built</span></dd>
+              </dl>
+            </div>
+          </details>
+        </div>
+      </article>
+
+      <!-- 4 -->
+      <article class="step">
+        <div class="step-mark">
+          <span class="n">4 · many, talking</span>
+        </div>
+        <div class="body">
+          <div><h3>Where the record matters most</h3><p class="kicker">Robots talking to robots, in the open.</p></div>
+          <p>Skeins message each other the same way you message them. A funded skein can pay another for work, or pay to stand up a new one. That's powerful, and it should make you a little uneasy.</p>
+          <p>The answer isn't to forbid it. It's the record: every message between them is signed, every step is recorded, and any of it can be replayed. People need to be able to see what happens between robots, and here they can.</p>
+          <details class="tech">
+            <summary>Technical details</summary>
+            <div class="tech-body">
+              <dl>
+                <dt>one wire</dt><dd>Skein to skein uses the same BRC-169 envelopes as person to skein. There's no separate channel for machines. <span class="chip built">built</span></dd>
+                <dt>payments</dt><dd>Tolls and quotes ride on the messages, and each program sets its own spending policy. <span class="chip designed">designed</span></dd>
+                <dt>standing one up</dt><dd>A skein asks a host for a new one exactly the way a person does: quote, payment, genesis. <span class="chip designed">designed</span></dd>
+              </dl>
+            </div>
+          </details>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="history">
+    <div class="sec-head">
+      <div><span class="label">Because it's history</span><h2>Replay, fork, merge</h2></div>
+      <div>
+        <p class="prose quiet">The state is data with a complete history, so you can work with it the way you work with a git repository.</p>
+        <div class="trio">
+          <div><span class="verb">replay</span><h3>Check any step</h3><p>Run it again from the log and get the same bytes. Nobody has to take the output on trust.</p></div>
+          <div><span class="verb">fork</span><h3>Branch from any point</h3><p>Start a new skein from a checkpoint and try something else. The original keeps going.</p></div>
+          <div><span class="verb">merge</span><h3>Bring it back</h3><p>File trees are git trees, so divergent work merges the way code does.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="runs">
+    <div class="sec-head">
+      <div><span class="label">Where it runs</span><h2>Anywhere the graph can be read</h2></div>
+      <div class="prose">
+        <p>A skein boots from a system tree: its programs, its configuration and its own files. The tree can come from a directory, a git repository, or a BEEF packet of an on-chain repository, verified offline without trusting whoever hosts it.</p>
+        <p>When the code comes from the chain, who published it and which version ran are both part of the record, so you get code signing without doing anything extra.</p>
+        <p class="quiet">The only interface is the message box. A skein with the same identity can run on a server, on your desktop or in a browser tab, and the parties it talks to can't tell the difference.</p>
+        <details class="tech">
+          <summary>Technical details</summary>
+          <div class="tech-body">
+            <dl>
+              <dt>system tree</dt><dd><code>bin/*.wasm</code> handlers, <code>etc/config.json</code>, <code>etc/subscriptions.json</code>, plus the skein's own files. The genesis record names the tree. <span class="chip built">built</span></dd>
+              <dt>chain packet</dt><dd>A BEEF bag plus a scope, verified offline. A packet whose scope is a state record restores a checkpoint. <span class="chip prog">in progress</span></dd>
+              <dt>hosts</dt><dd>A native kernel today. A browser build (the kernel compiled to wasm, IndexedDB as the store) is in progress. <span class="chip prog">in progress</span></dd>
+            </dl>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="costs">
+    <div class="sec-head">
+      <div><span class="label">What it costs</span><h2>Your skein pays its own way</h2></div>
+      <div class="prose">
+        <p>Shared indexers and gateways have answered these questions for free, to get the ecosystem started. A skein does that work for you alone, so it has real costs, and it pays them from its own wallet.</p>
+        <div class="meters">
+          <div class="meter"><span class="label">fuel</span><strong>Computation</strong><p>Metered per step, as recorded in the graph.</p></div>
+          <div class="meter"><span class="label">storage</span><strong>Bytes held</strong><p>Everything the graph keeps.</p></div>
+          <div class="meter"><span class="label">anchoring</span><strong>What goes on chain</strong><p>What you anchor, and how often.</p></div>
+        </div>
+        <p>When the funds run out, the skein stops. Fund it again and it picks up where it left off. Closing a skein settles every balance before anything is paid out.</p>
+        <details class="tech">
+          <summary>Technical details</summary>
+          <div class="tech-body">
+            <p>The host bills the skein's wallet through a one-way payment channel <span class="chip designed">designed</span></p>
+            <dl>
+              <dt>lock</dt><dd>Funds sit in an output that needs both the skein's and the host's signatures, with a timelocked refund to the skein, so they can't be held hostage.</dd>
+              <dt>meter</dt><dd>As usage accrues, the skein signs a new version of the spend that pays the host a larger share. The host keeps only the latest one.</dd>
+              <dt>settle</dt><dd>The host broadcasts the latest version on a sweep, a top-up or a close. Whatever is left returns to the skein.</dd>
+            </dl>
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="sec-head">
+      <div><span class="label">Getting one</span><h2>Four messages to a skein</h2></div>
+      <div class="prose">
+        <p>Standing one up is just a conversation with a host.</p>
+        <ol class="handshake">
+          <li><span class="who">you → host</span><span>Ask for a new skein under the handle you want.</span></li>
+          <li><span class="who">host → you</span><span>The host replies with the minimum funding and a payment address in the new skein's wallet.</span></li>
+          <li><span class="who">you → host</span><span>Accept and pay.</span></li>
+          <li><span class="who">host</span><span>The skein starts from its system tree with your key as its admin. A small token lands in your wallet so you can find it again.</span></li>
+        </ol>
+        <p class="quiet">Connect a BRC-100 wallet here to see and manage the skeins you control. The page finds them from the tokens in your wallet and asks each skein for its own state. <span class="chip prog">next</span></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>skein.nexus</span>
+    <span>The engine is open source: <a href="https://github.com/shruggr/skein">github.com/shruggr/skein</a></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('loom');
+  const ctx = canvas.getContext('2d');
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const worlds = [
+    {v:'--code',  label:'code'},
+    {v:'--coin',  label:'coins'},
+    {v:'--proof', label:'proofs'},
+    {v:'--msg',   label:'messages'}
+  ];
+  const PER = 7;
+  let W = 0, H = 0, colors = [], ink3 = '#888', t0 = performance.now(), raf = 0;
+
+  function readColors(){
+    const cs = getComputedStyle(document.documentElement);
+    colors = worlds.map(w => cs.getPropertyValue(w.v).trim() || '#888');
+    ink3 = cs.getPropertyValue('--ink-3').trim() || '#888';
+  }
+  function size(){
+    const r = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  const smooth = (a,b,x) => { const u = Math.min(1, Math.max(0,(x-a)/(b-a))); return u*u*(3-2*u); };
+
+  function draw(now){
+    const t = (now - t0) / 1000;
+    ctx.clearRect(0,0,W,H);
+    const N = worlds.length * PER;
+    const mid = H * 0.54;
+    const steps = Math.max(80, Math.round(W / 4));
+    const phaseT = reduce.matches ? 0 : t * 0.35;
+
+    for (let w = 0; w < worlds.length; w++){
+      for (let j = 0; j < PER; j++){
+        const s = w * PER + j;
+        const y0 = H * (0.16 + w * 0.22) + (j - (PER-1)/2) * H * 0.016;
+        const ph = (s / N) * Math.PI * 2;
+        let px = null, py = null;
+        for (let k = 0; k <= steps; k++){
+          const u = k / steps, x = u * W;
+          const b = smooth(0.22, 0.6, u);
+          const narrow = 1 - 0.45 * smooth(0.6, 1, u);
+          const ang = u * Math.PI * 6 + ph + phaseT;
+          const y1 = mid + Math.sin(ang) * H * 0.13 * narrow;
+          const y = y0 * (1 - b) + y1 * b;
+          if (px !== null){
+            const depth = Math.cos(ang);
+            const front = b > 0.05 ? (0.5 + 0.5 * depth) : 1;
+            ctx.globalAlpha = 0.22 + 0.68 * (b * front + (1 - b));
+            ctx.lineWidth = 1.1 + (b * (0.6 + 0.6 * depth));
+            ctx.strokeStyle = colors[w];
+            ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(x,y); ctx.stroke();
+          }
+          px = x; py = y;
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+    ctx.font = '500 11px "IBM Plex Mono", ui-monospace, monospace';
+    ctx.fillStyle = ink3;
+    for (let w = 0; w < worlds.length; w++){
+      const y0 = H * (0.16 + w * 0.22) - H * 0.07;
+      ctx.fillText(worlds[w].label.toUpperCase(), 2, y0);
+    }
+    const endY = mid - H * 0.13;
+    ctx.textAlign = 'right';
+    ctx.fillText('ONE GRAPH', W - 2, endY - 10);
+    ctx.textAlign = 'left';
+    if (!reduce.matches) raf = requestAnimationFrame(draw);
+  }
+  function restart(){ cancelAnimationFrame(raf); readColors(); size(); raf = requestAnimationFrame(draw); }
+
+  new ResizeObserver(restart).observe(canvas);
+  new MutationObserver(restart).observe(document.documentElement, {attributes:true, attributeFilter:['data-theme']});
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', restart);
+  reduce.addEventListener('change', restart);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(restart);
+  restart();
+})();
+</script>

@@ -1,0 +1,385 @@
+
+<!-- ============================================================ T-ARCH -->
+<article data-page="t-arch">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Architecture</h1>
+  <p class="lede">A deterministic WASI machine over a content-addressed graph. It has three layers: one kernel, a catalogue of programs, and several runtimes that drive the kernel from outside.</p>
+
+  <div class="block">
+    <div class="fig-inline" style="max-width:860px" role="img" aria-label="Diagram: a runtime (the host) provides routing, a signer, feeds, a libp2p host, a waker, a fuel ledger and an HTTP proxy. It drives one kernel per instance. Each kernel runs programs: front door, messagebox, wallet, loop and others, over a store of records.">
+      <svg viewBox="0 0 860 400" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12">
+        <defs><marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>
+        <!-- outside -->
+        <text x="16" y="40" fill="var(--ink-2)">clients · peers · agents</text>
+        <text x="16" y="58" fill="var(--ink-2)">Bitcoin feeds · web · libp2p</text>
+        <path d="M110,70 V96" stroke="var(--ink-3)" stroke-width="1.3" marker-end="url(#aa)" marker-start="url(#aa)"/>
+        <!-- runtime -->
+        <rect x="16" y="100" width="828" height="92" rx="12" fill="var(--sunk)" stroke="var(--rule)"/>
+        <text x="32" y="124" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="15" font-weight="600">runtime (host): a server · a desktop · a browser tab</text>
+        <g font-size="11.5">
+          <rect x="32" y="140" width="120" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="44" y="162" fill="var(--ink)">routing</text>
+          <rect x="164" y="140" width="92" height="36" rx="6" fill="var(--surface)" stroke="var(--keys)"/><text x="178" y="162" fill="var(--keys)">signer</text>
+          <rect x="268" y="140" width="84" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="284" y="162" fill="var(--ink)">feeds</text>
+          <rect x="364" y="140" width="108" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="376" y="162" fill="var(--ink)">libp2p host</text>
+          <rect x="484" y="140" width="80" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="498" y="162" fill="var(--ink)">waker</text>
+          <rect x="576" y="140" width="112" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="588" y="162" fill="var(--ink)">fuel ledger</text>
+          <rect x="700" y="140" width="128" height="36" rx="6" fill="var(--surface)" stroke="var(--rule)"/><text x="712" y="162" fill="var(--ink)">http proxy</text>
+        </g>
+        <!-- contract -->
+        <path d="M430,194 V222" stroke="var(--ink-3)" stroke-width="1.3" marker-end="url(#aa)" marker-start="url(#aa)"/>
+        <text x="444" y="214" fill="var(--ink-3)" font-size="11">frames: admit · call · wallet · http · libp2p</text>
+        <!-- kernel -->
+        <rect x="16" y="226" width="828" height="158" rx="12" fill="var(--ground)" stroke="var(--ink)" stroke-width="1.6"/>
+        <text x="32" y="250" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="15" font-weight="600">kernel: one per instance (Zig + wasmtime)</text>
+        <rect x="32" y="264" width="520" height="104" rx="8" fill="none" stroke="var(--sandbox)" stroke-dasharray="5 4"/>
+        <text x="44" y="284" fill="var(--sandbox)" font-size="11.5">programs (WASI p1 modules / 0.2 components)</text>
+        <g font-size="11.5" fill="var(--ink)">
+          <rect x="44" y="296" width="92" height="28" rx="5" fill="var(--surface)" stroke="var(--keys)"/><text x="54" y="314">front door</text>
+          <rect x="144" y="296" width="96" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="154" y="314">messagebox</text>
+          <rect x="248" y="296" width="68" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="258" y="314">wallet</text>
+          <rect x="324" y="296" width="56" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="334" y="314">loop</text>
+          <rect x="388" y="296" width="72" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="398" y="314">overlay</text>
+          <rect x="468" y="296" width="72" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="478" y="314">resolve</text>
+          <rect x="44" y="332" width="200" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="54" y="350">shell · git · qjs · python</text>
+          <rect x="252" y="332" width="288" height="28" rx="5" fill="var(--surface)" stroke="var(--rule)"/><text x="262" y="350">run · objects · head · subscribe</text>
+        </g>
+        <rect x="568" y="264" width="260" height="104" rx="8" fill="none" stroke="var(--graph)"/>
+        <text x="580" y="284" fill="var(--graph)" font-size="11.5">store (any key → bytes store)</text>
+        <g font-size="11" fill="var(--ink-2)">
+          <text x="580" y="306">records by CID</text>
+          <text x="580" y="324">log · chains · MST index maps</text>
+          <text x="580" y="342">one state record</text>
+          <text x="580" y="360" fill="var(--graph)">= the instance's one pointer</text>
+        </g>
+      </svg>
+    </div>
+    <p class="figcap">The runtime judges nothing. Everything that matters is decided by programs inside the kernel and written to the store.</p>
+  </div>
+
+  <div class="prose block">
+    <h2>Kernel</h2>
+    <p>The machine: store, log, scheduler, the WASI implementation and skein’s own imports, over wasmtime (C API, statically linked). One implementation, <code>kernel-zig</code>, which also compiles to <code>wasm32-freestanding</code> for the browser. CLI: <code>skein-kernel serve | replay | shell | dump | fuel</code>.</p>
+
+    <h2>Programs and the SDK</h2>
+    <p>A catalogue, not a fixed set: front door, messagebox, wallet, resolve, overlay, fetch, p2p, the workbench programs (<code>run</code>, <code>objects</code>, <code>head</code>, <code>subscribe</code>, <code>loop</code>) and the SDK they’re written against. Each genesis wires its own subset; none is mandatory. The stock programs are Zig, 70–670 KB each.</p>
+
+    <h2>Runtimes</h2>
+    <p>Whatever drives a kernel from outside. A runtime implements one contract: admitting entries, making calls, giving the kernel a store, and answering its outbound requests (signing, HTTP, libp2p). How it holds keys, where it stores bytes and how it’s deployed are its own business. Today there’s a server runtime and a browser runtime, and the same history replays under either.</p>
+
+    <h2>The kernel’s whole surface</h2>
+    <dl class="swap">
+      <div><dt>admit</dt><dd>The one call in that writes: append a log entry, then run the steps it drives.</dd></div>
+      <div><dt>call</dt><dd>Run a program function over current state. No entry, no writes, not replayed; its fuel goes to the host’s ledger. Every web read is one of these.</dd></div>
+      <div><dt>wallet</dt><dd>Out: key operations, answered by the runtime’s signer.</dd></div>
+      <div><dt>http</dt><dd>Out: a request, made by the runtime’s proxy and recorded with its response on the step. The proxy signing both is designed.</dd></div>
+      <div><dt>libp2p</dt><dd>Out: publish, dial, send, receive, close. Recorded like http.</dd></div>
+    </dl>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-data"><em>Technical</em><b>Data model: git + Bitcoin</b><span>Records, codecs, the index.</span></a>
+      <a href="#t-vm"><em>Technical</em><b>The kernel and VM</b><span>Syscalls, fuel, time, replay.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-DATA -->
+<article data-page="t-data" style="--pc:var(--graph)">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Data model: git and Bitcoin in one graph</h1>
+  <p class="lede">Every durable thing is a record: one IPLD object named by its CID. Git objects, Bitcoin structures and skein’s own records use different codecs and hashes, but they all live in one store and link to each other by CID.</p>
+
+  <div class="block" style="max-width:var(--measure)">
+    <p class="label" style="margin-bottom:8px">Families of record</p>
+    <dl class="swap head">
+      <div><dt>Family</dt><dd>Codec · hash · what the CID equals</dd></div>
+      <div><dt>skein</dt><dd><code>dag-cbor</code> · sha2-256. Log entries, thread origins and updates, messages, index nodes, the state record.</dd></div>
+      <div><dt>git</dt><dd><code>git-raw</code> · sha1. <b>A tree’s CID is its git object id.</b> A scanned directory hashes identically to <code>git write-tree</code>.</dd></div>
+      <div><dt>bitcoin</dt><dd><code>bitcoin-block</code> (0xb0) · dbl-sha2-256: CID = block hash. <code>bitcoin-tx</code> (0xb1): CID = txid. Exactly 64 bytes under <code>bitcoin-tx</code> is a Merkle node, whose CID is its Merkle hash.</dd></div>
+      <div><dt>raw</dt><dd>Wasm modules and the Python stdlib.</dd></div>
+    </dl>
+  </div>
+
+  <div class="block">
+    <div class="fig-inline" style="max-width:860px" role="img" aria-label="Diagram: a block header links to its Merkle root, which links down through Merkle nodes to a transaction. The transaction's inputs link to earlier transactions (spends edges). A git tree links to blobs and subtrees. A thread update links to a tree and to a kept transaction.">
+      <svg viewBox="0 0 860 330" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="11.5">
+        <defs><marker id="da" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/></marker></defs>
+        <text x="16" y="24" fill="var(--keys)" font-size="12">bitcoin</text>
+        <g fill="var(--surface)" stroke="var(--keys)" stroke-width="1.4">
+          <rect x="16" y="36" width="190" height="46" rx="6"/>
+          <rect x="16" y="112" width="190" height="40" rx="6"/>
+          <rect x="16" y="180" width="190" height="40" rx="6"/>
+          <rect x="16" y="250" width="190" height="46" rx="6"/>
+          <rect x="250" y="250" width="160" height="46" rx="6"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="28" y="56">header (bitcoin-block)</text><text x="28" y="72" fill="var(--ink-3)">CID = block hash</text>
+          <text x="28" y="136">merkle root (64 B)</text>
+          <text x="28" y="204">merkle node (64 B)</text>
+          <text x="28" y="270">tx (bitcoin-tx)</text><text x="28" y="286" fill="var(--ink-3)">CID = txid</text>
+          <text x="262" y="270">earlier tx</text><text x="262" y="286" fill="var(--ink-3)">CID = txid</text>
+        </g>
+        <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#da)">
+          <path d="M110,82 V110"/><path d="M110,152 V178"/><path d="M110,220 V248"/>
+          <path d="M206,273 H248"/>
+        </g>
+        <text x="120" y="98" fill="var(--ink-3)">merkleroot</text>
+        <text x="120" y="168" fill="var(--ink-3)">left / right</text>
+        <text x="212" y="318" fill="var(--keys)">vin → spends</text>
+        <text x="430" y="24" fill="var(--graph)" font-size="12">git</text>
+        <g fill="var(--surface)" stroke="var(--graph)" stroke-width="1.4">
+          <rect x="430" y="36" width="170" height="46" rx="6"/>
+          <rect x="430" y="112" width="80" height="36" rx="6"/>
+          <rect x="520" y="112" width="80" height="36" rx="6"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="442" y="56">tree (git-raw)</text><text x="442" y="72" fill="var(--ink-3)">CID = git tree id</text>
+          <text x="442" y="134">blob</text><text x="532" y="134">tree</text>
+        </g>
+        <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#da)"><path d="M480,82 V110"/><path d="M560,82 V110"/></g>
+        <text x="640" y="24" fill="var(--sandbox)" font-size="12">skein (dag-cbor)</text>
+        <g fill="var(--surface)" stroke="var(--sandbox)" stroke-width="1.4">
+          <rect x="630" y="36" width="220" height="46" rx="6"/>
+          <rect x="640" y="180" width="200" height="46" rx="6"/>
+        </g>
+        <g fill="var(--ink)">
+          <text x="642" y="56">thread update</text><text x="642" y="72" fill="var(--ink-3)">state · step · calls · fuel</text>
+          <text x="652" y="200">state record</text><text x="652" y="216" fill="var(--ink-3)">log · heads · index roots</text>
+        </g>
+        <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#da)">
+          <path d="M630,58 H602"/>
+          <path d="M700,84 C700,200 260,190 180,246"/>
+        </g>
+        <text x="604" y="50" fill="var(--ink-3)">tree</text>
+        <text x="440" y="192" fill="var(--ink-3)">keeps a tx</text>
+      </svg>
+    </div>
+    <p class="figcap">Links run from the newer record to the older one by CID, whatever the codec. Only transaction inputs add “spends” edges to the index.</p>
+  </div>
+
+  <div class="prose block">
+    <h2>Git mapping</h2>
+    <p>A repository in a tree is an ordinary git repository, except that <code>.git/objects</code> is synthetic: each loose object is served on the fly from its <code>git-raw</code> record, and writes are inflated, sha1-checked and kept as records. No object is stored twice, and there are no packs. An agent’s deployed tree <i>is</i> its repository’s tree.</p>
+
+    <h2>Bitcoin mapping</h2>
+    <p>Headers decode to <code>{version, previousblockhash → link, merkleroot → link, time, bits, nonce}</code>; transactions to <code>{version, vin: [{txid → link, vout, …}], vout, locktime}</code>, with bitcoind’s field names. Proofs are held sparsely: receiving a BUMP (BRC-74) checks its root against the header at that height, then stores each node it reveals. Conflicting nodes and wrong roots are refused. A <code>proofs</code> map records txid → <code>{block, depth, position}</code>, and a proof is rebuilt by walking down from the header by the position’s bits.</p>
+
+    <h2>Chains</h2>
+    <p>Anything that changes is a chain: an <b>origin</b> (its identity) and <b>updates</b> carrying <code>origin</code>, <code>prev</code> and <code>seq</code>. Point at the origin for “as it is now”, at an update for “exactly this version”. Threads, heads, subscriptions and the address book are all chains.</p>
+
+    <h2>The index and the state record</h2>
+    <p>The store is a key→bytes map plus one pointer. Each query the scheduler needs is its own Merkle search tree (fan-out ~32, canonical: the same pairs give the same root in any order): <code>log</code>, <code>unique</code>, <code>chains</code>, <code>threads</code>, <code>resting</code>, <code>sleepers</code>, <code>awaits</code>, <code>edges</code>, <code>heads</code>. One <code>skein-state</code> record holds the log tip and every map’s root. Its CID is the instance’s single mutable pointer and a function of the log: same log, same state CID.</p>
+    <p class="quiet">Cost: 2.5–7.5 new index nodes (0.6–4.2 KiB) plus ~1 KiB of state records per log entry. Pruning old index history is designed, not built.</p>
+
+    <h2>Edges</h2>
+    <p>The <code>edges</code> map indexes who points at what, derived from records a step <i>keeps</i>: <code>launched-by</code>, <code>depends-on</code>, <code>resolves</code>, record <code>refs</code>, and <code>spends</code> for kept transactions’ inputs. “Who spent txid:vout” is a prefix scan. Rejection propagates along <code>spends</code>, <code>admits</code> and <code>derives-from</code>.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-vm"><em>Technical</em><b>The kernel and VM</b><span>What produces the records.</span></a>
+      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>What reads the Bitcoin records.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-VM -->
+<article data-page="t-vm" style="--pc:var(--sandbox)">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">The kernel and VM</h1>
+  <p class="lede">A WASI machine where every input is a log entry and every value that didn’t come from the log is recorded. Replay is exact, and computation is metered by instruction count.</p>
+
+  <div class="prose block">
+    <h2>ABIs</h2>
+    <p>Programs are WASI preview1 core modules or WASI 0.2 components (world <code>skein:kernel/handler</code>). The kernel tells them apart by the binary preamble and gives both one behaviour: 0.2 filesystem and io calls are answered by the preview1 implementation. Imports the kernel doesn’t answer (sockets, say) link as traps.</p>
+
+    <h2>Two kinds of syscall</h2>
+    <dl class="swap">
+      <div><dt>Pure</dt><dd>Files, pipes, spawn, stdio, clock, random. Answered inside, deterministically, never recorded.</dd></div>
+      <div><dt>Recorded</dt><dd><code>wallet</code>, <code>http</code>, <code>libp2p</code>. The request and answer are written on the step’s update; replay serves them from there, and a request that differs on replay is a divergence.</dd></div>
+      <div><dt>Graph</dt><dd><code>get</code>/<code>put</code>/<code>putblock</code> by CID, <code>keep</code>, <code>launch</code>, <code>await</code>, <code>advance</code> (heads), <code>subscribe</code>, <code>deadline</code>, <code>edges</code>, <code>call</code>.</dd></div>
+    </dl>
+
+    <h2>Time</h2>
+    <p>The runtime stamps each entry at admission. Inside a step, <code>t = max(last + 1, stamp + fuel)</code>, one unit of fuel per clock tick: time never repeats, never goes back, and is recomputed exactly on replay. A shell and its children share one meter and one clock. Busy-waits end on their own. Sleep is a deadline; the waker admits one <code>wake</code> entry when it comes, and there are no periodic wake-ups.</p>
+
+    <h2>Randomness</h2>
+    <p>SHA-256(key ‖ counter) blocks, key = SHA-256(entry CID ‖ thread CID). Python’s <code>random</code>, <code>uuid4</code>, QuickJS <code>Math.random</code> and git’s temp names all draw on it and replay identically. It’s predictable from public records, so secrets are made by the signer instead.</p>
+
+    <h2>Fuel</h2>
+    <p>wasmtime fuel is on for every step and summed across everything in it (handler, shell, children, nested calls). The limit is <code>fuelPerStep</code> (default 10<sup>12</sup>); running out ends the step <code>errored</code>, deterministically, and it’s never retried. Kernel calls have their own limit (10<sup>10</sup>) and are charged to the host ledger. <code>skein-kernel fuel</code> is the billing query. Overhead is 0–9%. In the browser, where V8 has no fuel, the kernel instruments each module to count its own, and the counts match wasmtime’s.</p>
+
+    <h2>Replay</h2>
+    <p><code>skein-kernel replay</code> rebuilds a store from its log with no wallet or network. The equivalence suite replays 16 real histories twice, natively, instrumented and in headless Chrome, and requires identical dumps, fuel and explorer pages. Signatures are deterministic (RFC 6979), so they replay too. Crash recovery is replay at hydrate time: a cut-off step runs again.</p>
+
+    <h2>Userland</h2>
+    <ul>
+      <li><b>Shell</b>: brush (bash-compatible, Rust) over uutils coreutils, plus find, xargs, diff, jq (jaq), sed, awk, tree and grep. Pipelines run stage by stage, with 64 MiB pipes.</li>
+      <li><b>git 2.55</b> in C via wasi-sdk: init to merge (three-way, conflicts), tag, fsck. No remotes, no packs. Commit dates come from the in-step clock, so commit IDs replay.</li>
+      <li><b>qjs</b> (QuickJS-ng) registered as <code>node</code> with a sync Node shim, and <b>CPython 3.14</b> with its stdlib mounted read-only. No npm, no pip, no sockets.</li>
+      <li><b>Size</b>: 13.7 MB for the shell toolset, plus 19.1 MB for the script runtimes.</li>
+    </ul>
+
+    <h2>Browser build</h2>
+    <p>The same kernel for <code>wasm32-freestanding</code> (2.4 MB) in a Worker, with IndexedDB as the store. It needs cross-origin isolation. It runs preview1 modules only, with no libp2p yet. Logs cross between browser and native in both directions.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-net"><em>Technical</em><b>Messages and network</b><span>How entries get admitted.</span></a>
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>How a kernel gets its programs.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-NET -->
+<article data-page="t-net" style="--pc:var(--keys)">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Messages and network</h1>
+  <p class="lede">The instance is an HTTP server. BRC-103/104 is the network, BRC-33 is the mailbox, BRC-169 is discovery, and only messages are state.</p>
+
+  <div class="prose block">
+    <h2>The front door</h2>
+    <p>Each instance has its own origin (<code>&lt;handle&gt;.host</code>, or <code>/@handle</code>). The runtime forwards every request as one kernel <code>call</code> of the front-door program, which runs the BRC-103/104 handshake and verifies each message inside the VM. The caller is the identity key the session proved; there are no accounts. Answers are signed on the session through the runtime’s signer.</p>
+    <p><code>etc/routes.json</code> maps paths to program functions (auth defaults to BRC-104; <code>"none"</code> is for open routes like overlay submit). <code>etc/reads.json</code> gates read routes by caller. A handler answers <code>{status, body, admit?, then?}</code>, and <code>admit</code> lists the entries to write.</p>
+
+    <h2>The persistence rule</h2>
+    <dl class="swap">
+      <div><dt>Message arrives</dt><dd>One <code>mail</code> entry, carrying the signed BRC-104 request, so authorship verifies from the log with keys alone.</dd></div>
+      <div><dt>Read or poll</dt><dd>Nothing. Tested at 10,000 polls: 0 entries, 0 bytes.</dd></div>
+      <div><dt>Handshake</dt><dd>Nothing. Sessions are held in memory, never in the log; after a restart the client simply handshakes again.</dd></div>
+      <div><dt>Acknowledgement</dt><dd>One entry: the reader’s pointer moves.</dd></div>
+      <div><dt>Sending</dt><dd>Part of the sending step: a recorded <code>http</code> call and the record it put. Not an entry.</dd></div>
+    </dl>
+
+    <h2>Routing inside</h2>
+    <p>A body with <code>replyTo</code> resumes the thread awaiting that record, but only from the identity it was sent to. Otherwise a message is routed by subscription on <code>(sender, box)</code>, first match wins. “A subscription is the permission”; the subscription table is itself a chain. No match means it’s recorded and nothing runs.</p>
+
+    <h2>Mailboxes, delivery, discovery</h2>
+    <ul>
+      <li><b>Messagebox program</b>: BRC-33 send/list/ack (JSON or BRC-231 CBOR). An instance’s own boxes keep no list: admission is the acknowledgement, and the log is the queue.</li>
+      <li><b>Mailbox instances</b>: an outside identity (a person, the inference peer, a browser tab) gets an instance with only the front door and messagebox. There’s no separate messagebox host.</li>
+      <li><b>Delivery</b>: <code>send</code> looks up the address book (head <code>peers</code>: key → mailbox URL), reuses a BRC-104 session, and POSTs as a recorded call. Transient and permanent failures are distinguished; an unknown key is “no route”.</li>
+      <li><b>Discovery</b> (BRC-169) is a program, not core: manifest, then handle → identity key and messagebox, as recorded calls.</li>
+    </ul>
+
+    <h2>Inference protocol</h2>
+    <p>The loop sends <code>{model, thinking?, tools?, parent?, nodes}</code>, where <code>nodes</code> are only the turn records new since the last request, each with its CID and <code>parent</code>. The inference peer stores nodes per sender, walks back to the root and sends the engine the whole chat. If it lacks a node it answers <code>{missing: [cid]}</code> and the loop resends once. The completion arrives as mail with <code>replyTo</code>, and resumes the thread.</p>
+
+    <h2>libp2p</h2>
+    <p>The runtime runs a libp2p node for each instance that asks for one (GossipSub with strict signing). Inbound arrives as front-door calls; an accepted topic message is one <code>p2p</code> entry that re-verifies from the log; duplicates and rejects write nothing. Outbound is the recorded <code>libp2p</code> import. The peer key is separate from the identity key and never holds funds.</p>
+    <p class="quiet">Designed, not built: the front door forwarding admitted entries on every transport (today a transaction arriving by pubsub doesn’t persist overlay state the way <code>POST /submit</code> does).</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-wallet"><em>Technical</em><b>Wallet and overlays</b><span>The signer and what it signs.</span></a>
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>Where routes and subscriptions come from.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-WALLET -->
+<article data-page="t-wallet" style="--pc:var(--keys)">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Wallet and overlays</h1>
+  <p class="lede">The wallet is split in two: the keys stay outside with the runtime’s signer, and wallet state lives inside as records. The overlay node shares the same chain and settlement core.</p>
+
+  <div class="prose block">
+    <h2>The signer</h2>
+    <p>The kernel holds no keys. Key operations (get public key, sign, encrypt/decrypt, HMAC, verify) are requests to the runtime’s signer, which might be a hosting service’s key store, a hardware module, or the user’s own BRC-100 wallet in a browser tab. A signing request carries a key reference and a 32-byte hash, nothing else. How keys are made, stored and derived is the runtime’s business and outside the skein.</p>
+
+    <h2>The wallet program</h2>
+    <p><code>wallet-zig</code> over bsvz, compiled to wasm. Operations include <code>headers</code>, <code>internalize</code> (BRC-100 internalizeAction on Atomic BEEF), <code>proof</code>, <code>createAction</code>, <code>signAction</code> and <code>list</code>. The builder picks the largest spendable outputs first, sends change to a fresh BRC-29 key, and returns Atomic BEEF with ancestry back to proven transactions. It matches go-sdk’s ProtoWallet byte for byte on shared test vectors. A genesis opts into it; it isn’t there by default.</p>
+
+    <h2>SPV and headers</h2>
+    <p>The anchor is the network’s genesis header, a constant. Every header must link, meet its proof-of-work target and carry the most work. Difficulty adjustment and timestamps aren’t checked, by decision. A payment validates synchronously or fails. A signing-only wallet needs no headers; the full chain (~72 MB) lives only in an instance fed by a header service. Chronicle rules are on by default.</p>
+
+    <h2>Feeds</h2>
+    <p>The runtime holds subscriptions an instance declares (a header stream, and transaction status callbacks) and admits each item as a plain event entry. It judges nothing: headers and proofs validate themselves inside, and a broadcast status is provisional until there’s a proof.</p>
+
+    <h2>Settlement</h2>
+    <p><i>Unproven</i>, <i>proven</i> or <i>rejected</i> is computed, never stored. Rejection bubbles through <code>spends</code> edges; reorgs revert proofs. Settlement is state to read, not an event to push. Threads fork, they don’t replay: a rejection reaches a thread as a new input, and history stays.</p>
+
+    <h2>Overlay node</h2>
+    <p>An instance can serve BRC-22/24 through its own front door (<code>POST /submit</code>, <code>POST /lookup</code>, open auth). Submit decodes the BEEF once into records in the call’s scratch space, runs SPV, and asks topic managers <code>identify(tx: cid, …)</code>. <b>Nothing persists unless a topic admits</b>; otherwise it answers 200 with an empty STEAK and the store is byte-identical. Lookup services keep their own maps and get <code>admitted</code>/<code>spent</code>/<code>rejected</code> hooks. Tested against the stock <code>@bsv/sdk</code> broadcaster and resolver.</p>
+    <p class="quiet">Not built: SHIP/SLAP advertisement, GASP sync, certificates, header catch-up, proofs on demand. One broadcaster per host is designed.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-deploy"><em>Technical</em><b>Genesis and deployment</b><span>How an instance starts.</span></a>
+      <a href="#t-status"><em>Technical</em><b>What is built</b><span>Status by area.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-DEPLOY -->
+<article data-page="t-deploy">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">Genesis and deployment</h1>
+  <p class="lede">An instance’s first log entry, its genesis, names who it is and the tree it boots from. Everything after is a consequence of that entry and the ones that follow.</p>
+
+  <div class="prose block">
+    <h2>The system tree</h2>
+<pre style="font-family:var(--mono);font-size:13.5px;line-height:1.55;background:var(--surface);border:1px solid var(--rule);border-radius:10px;padding:16px 18px;overflow-x:auto;margin:0">bin/&lt;name&gt;.wasm | .cid | .json   programs
+etc/config.json                   defaults, peers, feeds, owner, libp2p
+etc/subscriptions.json            (sender, box) → program   (required)
+etc/routes.json                   HTTP path → program fn
+etc/reads.json                    who may call read routes
+SOUL.md, IDENTITY.md, skills/…    the instance's own files</pre>
+    <p>Booting pre-fills the store and writes a genesis naming the tree; processing it sets head <code>main</code>. The genesis also fixes the owner, the default limits and the owner’s mailbox for the life of the store.</p>
+
+    <h2>Two sources, one loader</h2>
+    <ul>
+      <li><b>A directory</b>, scanned into git objects, or a tree CID already in a store.</li>
+      <li><b>A chain packet</b>: a BEEF bag plus a scope CID, verified offline for scope, hashes, completeness and, optionally, chain inclusion. Carriers are <code>OP_FALSE OP_RETURN</code> outputs with <code>ordfs/dir</code> (a gib directory manifest) or <code>ordfs/patch</code>. A gib commit and a clone of it yield the same store.</li>
+    </ul>
+
+    <h2>Checkpoints</h2>
+    <p>A packet whose scope is a <code>skein-state</code> record is a checkpoint. It restores onto an empty store without rebuilding the index, as long as it runs under the same identity. A stock-system checkpoint is ~88 MB, because it includes the shell and Python.</p>
+
+    <h2>Deploying files vs booting</h2>
+    <p>Booting sets up a new store. Deploying sends files into a running instance: an agent’s <code>SOUL.md</code>, <code>IDENTITY.md</code> and <code>skills/</code> go in through the <code>objects</code> box as an ordinary signed message from the owner.</p>
+
+    <h2>Upgrades are re-genesis</h2>
+    <p>New program versions apply to new geneses; an existing store keeps the modules its genesis names, and older formats aren’t migrated. Upgrading today means a new store.</p>
+    <p class="quiet">Not built: a command that takes a commit ID directly, publishing packets on chain (the packet writer makes never-broadcast transactions for tests), and checkpoints anchored as gib heads.</p>
+  </div>
+
+  <div class="deeper">
+    <span class="label">Next</span>
+    <div class="cards">
+      <a href="#t-status"><em>Technical</em><b>What is built</b><span>Status by area.</span></a>
+      <a href="#running"><em>Running one</em><b>Hosting, cost, getting one</b><span>Back to the overview level.</span></a>
+    </div>
+  </div>
+</article>
+
+<!-- ============================================================ T-STATUS -->
+<article data-page="t-status">
+  <span class="pagekicker">Technical</span>
+  <h1 class="page-h">What is built</h1>
+  <p class="lede">Status by area, as of the end of September 2026. “Built” means merged, with tests.</p>
+
+  <div class="block" style="max-width:var(--measure)">
+    <div class="levels">
+      <div><h4>Kernel</h4><p><span class="status built">built</span> Zig kernel on wasmtime, both ABIs, fuel, fuel clock, deterministic random, replay, MST index, single state record, browser build.</p></div>
+      <div><h4>Userland</h4><p><span class="status built">built</span> Shell and tools, git, JavaScript, Python. <span class="status">gaps</span> tar/gzip, packages, streaming pipes.</p></div>
+      <div><h4>Network</h4><p><span class="status built">built</span> Front door with BRC-103/104, routes and reads, mailbox instances, messagebox, address book, discovery, libp2p. <span class="status">designed</span> Admitting on every transport.</p></div>
+      <div><h4>Wallet</h4><p><span class="status built">built</span> Signer interface, wallet program, SPV, feeds, sparse proofs, settlement. <span class="status">not yet</span> Header catch-up, proofs on demand, certificates.</p></div>
+      <div><h4>Overlay</h4><p><span class="status built">built</span> Topic managers and lookup services on CIDs. <span class="status">not yet</span> SHIP/SLAP, GASP. <span class="status">designed</span> One broadcaster per host.</p></div>
+      <div><h4>Inference</h4><p><span class="status built">built</span> Inference peer, context deltas, turn records, tool steps. <span class="status">not yet</span> Forking UI, budgets.</p></div>
+      <div><h4>Deployment</h4><p><span class="status built">built</span> System trees, reading chain packets, checkpoints. <span class="status">not yet</span> Publishing on chain, commit-ID boot.</p></div>
+      <div><h4>Hosting &amp; payments</h4><p><span class="status built">built</span> Metering. <span class="status">designed</span> Payment channel billing, stand-up flow, tolls on messages. <span class="status">not yet</span> Public hosting, prices.</p></div>
+      <div><h4>Graph ops</h4><p><span class="status built">built</span> Heads, git branches and merges, conversation parents, checkpoint restore. <span class="status">not yet</span> Forking or merging whole instances.</p></div>
+    </div>
+    <p class="quiet" style="font-size:15.5px;margin-top:14px">Latest suites: kernel 45/45, wallet 25/25, overlay 2/2, npm 124/124, equivalence 199 ok, 0 fail. The tracker is <a href="https://github.com/shruggr/skein/issues/31">issue #31</a>.</p>
+  </div>
+</article>

@@ -1,0 +1,133 @@
+<!-- ============================================================ OVERVIEW -->
+<article data-page="overview">
+  <div class="hero">
+    <div>
+      <h1>A computer with its own keys and a complete memory.</h1>
+      <p class="lede">A skein is a sandbox that holds its own keys. The only way in or out is a signed message or a transaction you can prove on Bitcoin. Everything that happens inside is kept as a history you can branch and merge, the way you work with a git repository.</p>
+    </div>
+
+    <div>
+      <div class="figure" role="img" aria-label="Diagram: people, programs, other skeins and Bitcoin reach a skein only through one door guarded by its keys. Inside, programs run in a sandbox and write to a graph of history that branches and merges.">
+        <svg viewBox="0 0 880 380" xmlns="http://www.w3.org/2000/svg" font-family="JetBrains Mono, ui-monospace, monospace" font-size="12">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-3)"/>
+            </marker>
+          </defs>
+          <!-- outside world -->
+          <g fill="var(--ink-2)">
+            <text x="20" y="92">people</text>
+            <text x="20" y="152">programs</text>
+            <text x="20" y="212">other skeins</text>
+            <text x="20" y="272">Bitcoin</text>
+          </g>
+          <g stroke="var(--ink-3)" stroke-width="1.3" fill="none" marker-end="url(#ah)" marker-start="url(#ah)">
+            <path d="M118,88 C170,88 170,188 216,190"/>
+            <path d="M118,148 C160,148 170,190 216,190"/>
+            <path d="M118,208 C160,208 170,190 216,190"/>
+            <path d="M88,268 C170,268 170,192 216,190"/>
+          </g>
+          <!-- skein boundary -->
+          <rect x="232" y="30" width="628" height="320" rx="16" fill="var(--ground)" stroke="var(--ink)" stroke-width="2"/>
+          <text x="252" y="56" fill="var(--ink)" font-family="Familjen Grotesk, system-ui, sans-serif" font-size="17" font-weight="600">a skein</text>
+          <!-- door with keys -->
+          <rect x="220" y="150" width="24" height="80" rx="5" fill="var(--keys)"/>
+          <g transform="translate(262,172)">
+            <circle cx="9" cy="9" r="7" fill="none" stroke="var(--keys)" stroke-width="2.4"/>
+            <path d="M16,9 H40 M32,9 V16 M38,9 V14" stroke="var(--keys)" stroke-width="2.4" fill="none"/>
+          </g>
+          <text x="262" y="210" fill="var(--keys)" font-size="11.5">identity + wallet keys</text>
+          <text x="262" y="226" fill="var(--ink-3)" font-size="11">sign out · verify in</text>
+          <!-- sandbox -->
+          <rect x="420" y="62" width="160" height="256" rx="10" fill="none" stroke="var(--sandbox)" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <text x="434" y="86" fill="var(--sandbox)" font-size="12">sandbox</text>
+          <g font-size="12" fill="var(--ink)">
+            <rect x="436" y="104" width="128" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+            <text x="448" y="123">shell · git</text>
+            <rect x="436" y="144" width="128" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+            <text x="448" y="163">JS · Python</text>
+            <rect x="436" y="184" width="128" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+            <text x="448" y="203">a model's turns</text>
+            <rect x="436" y="224" width="128" height="30" rx="6" fill="var(--surface)" stroke="var(--rule)"/>
+            <text x="448" y="243">your program</text>
+          </g>
+          <text x="434" y="290" fill="var(--ink-3)" font-size="11">no disk, network or</text>
+          <text x="434" y="305" fill="var(--ink-3)" font-size="11">clock of its own</text>
+          <!-- door to sandbox -->
+          <path d="M246,190 H414" stroke="var(--keys)" stroke-width="1.6" fill="none" marker-end="url(#ah)" stroke-dasharray="0" opacity=".9"/>
+          <!-- sandbox to graph -->
+          <path d="M584,190 H616" stroke="var(--graph)" stroke-width="1.6" fill="none" marker-end="url(#ah)"/>
+          <!-- graph -->
+          <text x="626" y="86" fill="var(--graph)" font-size="12">graph of history</text>
+          <g stroke="var(--graph)" stroke-width="2" fill="none">
+            <path d="M650,300 V120"/>
+            <path d="M650,270 C650,250 705,255 705,235 V205 C705,185 650,185 650,165"/>
+            <path d="M650,200 C650,180 790,190 790,165 V130"/>
+          </g>
+          <g fill="var(--graph)">
+            <circle cx="650" cy="300" r="6"/><circle cx="650" cy="270" r="6"/><circle cx="650" cy="235" r="6"/>
+            <circle cx="650" cy="200" r="6"/><circle cx="650" cy="165" r="6"/>
+            <circle cx="705" cy="235" r="6"/><circle cx="705" cy="205" r="6"/>
+            <circle cx="790" cy="165" r="6"/>
+          </g>
+          <g fill="var(--ground)" stroke="var(--graph)" stroke-width="2">
+            <circle cx="650" cy="120" r="9"/><circle cx="790" cy="130" r="9"/>
+          </g>
+          <g font-size="11" fill="var(--ink-2)">
+            <text x="664" y="124">head</text>
+            <text x="716" y="224">branch</text>
+            <text x="716" y="238">and merge</text>
+            <text x="752" y="112">another head</text>
+            <text x="664" y="304">genesis</text>
+          </g>
+        </svg>
+      </div>
+      <p class="figcap">One door, guarded by the skein’s keys. Programs inside write to a graph that never overwrites anything.</p>
+    </div>
+  </div>
+
+  <section class="block">
+    <p class="label" style="margin-bottom:14px">What it is: three parts</p>
+    <div class="pillars">
+      <div class="pillar" style="--pc:var(--sandbox)">
+        <span class="sw"></span>
+        <h3>The sandbox<small>Programs run with no side doors.</small></h3>
+        <p>A skein runs ordinary programs compiled to WebAssembly: a shell, git, JavaScript, Python, or a model deciding what to do next. They get no hidden disk, network or clock. Every step is metered, and any step can be run again with exactly the same result.</p>
+        <a class="go" href="#sandbox">The sandbox</a>
+      </div>
+      <div class="pillar" style="--pc:var(--keys)">
+        <span class="sw"></span>
+        <h3>Keys and the door<small>It has an identity and a wallet.</small></h3>
+        <p>Each skein has its own identity keys and its own Bitcoin wallet. Messages come in signed by their sender, Bitcoin data comes with its proof, and anything the skein asks the outside world for comes back signed by the host that fetched it. You always know who sent what and what was paid.</p>
+        <a class="go" href="#keys">Keys and the door</a>
+      </div>
+      <div class="pillar" style="--pc:var(--graph)">
+        <span class="sw"></span>
+        <h3>The graph<small>Nothing is overwritten.</small></h3>
+        <p>Every file, message, transaction and step is stored as a record addressed by its hash, so it can’t change once it’s written. Git repositories and Bitcoin proofs sit in the same graph. You can pick any point as a head, branch from it and merge back.</p>
+        <a class="go" href="#graph">The graph</a>
+      </div>
+    </div>
+
+    <div class="together">
+      <div><b>One door means a complete record.</b>If something reached the skein, it came through the door, so it’s in the graph along with who sent it.</div>
+      <div><b>A complete record means replay.</b>The sandbox has no hidden inputs, so running a step again from the record gives the same bytes.</div>
+      <div><b>Replay means branching is cheap.</b>Any point in the history is a full state. Start from it, try something else, and merge back what works.</div>
+    </div>
+  </section>
+
+  <section class="block">
+    <p class="label" style="margin-bottom:6px">What you can do with it</p>
+    <div class="uses">
+      <a class="use" href="#inference"><span class="k">agents</span><h4>Watch a model work, turn by turn</h4><p>Each inference request and each tool call is a change to the graph. You can read back, replay or branch from any turn, and an agent can look across every conversation, not just its own log.</p></a>
+      <a class="use" href="#identity"><span class="k">identity</span><h4>Give every agent, and every person, a skein</h4><p>Its own handle, keys, wallet and mailbox. Other people and programs talk to it by public key.</p></a>
+      <a class="use" href="#network"><span class="k">network</span><h4>Let skeins work with each other in the open</h4><p>Skeins message and pay each other the same way you message them, and every exchange is signed and kept.</p></a>
+      <a class="use" href="#yourwork"><span class="k">your work</span><h4>One graph over all your work</h4><p>Repositories, machines and agent providers, in one history you can search and trace, whether a person or a program did the work.</p></a>
+      <a class="use" href="#bitcoin"><span class="k">bitcoin</span><h4>Your own slice of Bitcoin, indexed and proven</h4><p>Coins, transactions, proofs, headers and overlay data kept by you, for you, instead of by a shared indexer.</p></a>
+      <a class="use" href="#anywhere"><span class="k">deploy</span><h4>Start from a commit, run anywhere</h4><p>A skein boots from a git tree, even one published on chain, and runs the same on a server, a laptop or in a browser tab.</p></a>
+    </div>
+  </section>
+
+  <p class="quiet block" style="font-size:16px;max-width:var(--measure)">Skein is open source and being built now. Pages mark each part as <span class="status built">built</span>, <span class="status wip">in progress</span> or <span class="status">designed</span>. The code is at <a href="https://github.com/shruggr/skein">github.com/shruggr/skein</a>.</p>
+</article>
+
