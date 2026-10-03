@@ -248,6 +248,7 @@
 
     <h2>A multi-skein host</h2>
     <p>One process, one master secret, many skeins. Each skein’s identity key and its libp2p key are derived from that secret inside the process, so no secret is passed between tools. Each skein has its own address, its own store and its own libp2p node. This is what a service operator runs.</p>
+    <p>Every skein serves the same management page at its address: with your wallet connected, it creates a skein on the host, keeps the list of your skeins in your wallet, and installs apps into each.</p>
 
     <h2>The command line</h2>
     <p>One skein on your own machine, run by the same host code. It is for development and for personal use.</p>
