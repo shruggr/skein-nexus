@@ -11,6 +11,7 @@ page = (here/'index.html').read_text()
 split = page.index('</style>') + len('</style>')
 dist = here/'dist'
 dist.mkdir(exist_ok=True)
+(dist/'manifest.json').write_bytes((here/'manifest.json').read_bytes())  # BRC-169 manifest: resolve/search live on id.skein.nexus
 (dist/'index.html').write_text(
     '<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'

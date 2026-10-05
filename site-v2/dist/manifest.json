@@ -1,0 +1,14 @@
+{
+  "metanet": {
+    "trust": {
+      "name": "skein.nexus",
+      "note": "handles and mailboxes on the skein.nexus host",
+      "publicKey": "03cf422de306291f2bfb5ecaf3093f811142a03bdebdf7ea7d72216b6855709808"
+    },
+    "handles": {
+      "version": "1.0",
+      "resolve": "https://id.skein.nexus/.well-known/metanet-handles/resolve",
+      "search": "https://id.skein.nexus/.well-known/metanet-handles/search"
+    }
+  }
+}
