@@ -3,7 +3,7 @@
     "trust": {
       "name": "skein.nexus",
       "note": "handles and mailboxes on the skein.nexus host",
-      "publicKey": "03cf422de306291f2bfb5ecaf3093f811142a03bdebdf7ea7d72216b6855709808"
+      "publicKey": "025776f84f17becb4fb101f74a6972115a33259c37119c3022fe064ed95393f682"
     },
     "handles": {
       "version": "1.0",
